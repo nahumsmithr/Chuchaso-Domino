@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -99,7 +99,12 @@
                 <i class="ph-bold ph-shield-check"></i>
             </div>
             <span class="hidden md:inline font-bold tracking-widest uppercase text-xs">Modo Administrador</span>
-            <span id="admin-stat-prods" class="bg-black/50 border border-white/10 px-3 py-1 rounded-full text-xs font-bold text-encom-yellow">0 Productos</span>
+            
+            <!-- INDICADOR DE CONEXIÓN A BASE DE DATOS -->
+            <div class="flex items-center gap-2 bg-black/50 border border-white/10 px-3 py-1 rounded-full text-xs font-bold" title="Estado de la Base de Datos">
+                <span id="db-status-dot" class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+                <span id="admin-stat-prods" class="text-encom-yellow">Conectando...</span>
+            </div>
         </div>
         <div class="flex items-center gap-2 md:gap-6 text-sm font-semibold">
             <button onclick="abrirModalAdd()" class="hover:text-encom-yellow transition-colors flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5"><i class="ph-bold ph-plus-circle text-lg"></i> <span class="hidden md:inline">Añadir Producto</span></button>
@@ -822,6 +827,19 @@
         </div>
     </div>
 
+    <!-- Modal Confirmación -->
+    <div id="confirm-modal" class="modal-overlay fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[500] p-4">
+        <div class="modal-content bg-encom-dark border-t-4 border-red-500 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center">
+            <i class="ph-fill ph-warning-circle text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-white mb-2">Confirmar Acción</h3>
+            <p class="text-zinc-400 text-sm mb-6"></p>
+            <div class="flex gap-4">
+                <button id="btn-cancel-confirm" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded-lg font-bold transition-colors">Cancelar</button>
+                <button id="btn-accept-confirm" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-bold transition-colors">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Selección de Portal Admin -->
     <div id="admin-choice-modal" class="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100]">
         <div class="modal-content bg-encom-dark p-8 md:p-10 rounded-2xl border-t-4 border-encom-yellow max-w-sm w-full mx-4 shadow-2xl relative">
@@ -927,7 +945,7 @@
                 <input type="text" id="new-category-name" placeholder="Nueva Categoría (Ej: Inversores)" class="flex-1 bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-encom-yellow focus:ring-1 focus:ring-encom-yellow transition-all">
                 <button onclick="agregarCategoria()" class="bg-transparent border border-encom-yellow text-encom-yellow px-6 py-3 rounded-lg font-bold hover:bg-encom-yellow hover:text-black transition-all">Crear</button>
             </div>
-            <p class="text-sm text-encom-dim border-t border-white/10 pt-4">Categorías actuales habilitadas para el filtro:</p>
+            <p class="text-sm text-zinc-500 border-t border-white/10 pt-4">Categorías actuales habilitadas para el filtro:</p>
             <div id="current-categories-list" class="flex flex-wrap gap-2 mt-4 text-white font-medium"></div>
         </div>
     </div>
@@ -1198,31 +1216,46 @@
     <!--  SCRIPT CONEXIÓN Y SINCRONIZACIÓN TOTAL CON FIREBASE      -->
     <!-- ======================================================== -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { 
-            getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Configuración oficial de tu aplicación de Firebase
-        const firebaseConfig = {
+        // ==========================================
+        //  🚨 INSTRUCCIONES IMPORTANTES SOBRE FIREBASE 🚨
+        // ==========================================
+        // Si descargas este archivo y lo pones en tu propia página web (usando la variable userFirebaseConfig de abajo), 
+        // debes ir a la consola de Firebase:
+        // 1. En Authentication -> Sign-in method -> Activar "Anónimo" (Anonymous).
+        // 2. En Firestore -> Reglas (Rules) -> Pegar esto:
+        //      rules_version = '2';
+        //      service cloud.firestore {
+        //        match /databases/{database}/documents {
+        //          match /artifacts/{appId}/public/data/{document=**} { allow read, write: if true; }
+        //        }
+        //      }
+        // ==========================================
+
+        const userFirebaseConfig = {
             apiKey: "AIzaSyBxf6PDYRSlKNHBukSxjGnDaNa49IRmjlU",
             authDomain: "encom-power-app.firebaseapp.com",
             projectId: "encom-power-app",
             storageBucket: "encom-power-app.firebasestorage.app",
             messagingSenderId: "537505362531",
-            appId: "1:537505362531:web:941c0af77fcd151edf7e5",
+            appId: "1:537505362531:web:941c0af77fcd151edf7e56", 
             measurementId: "G-X99K2MF1RG"
         };
-
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userFirebaseConfig;
+        
         // Inicializamos los servicios
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
-
-        console.log("🚀 [Firebase] Conexión establecida de manera exitosa con Firestore y Storage.");
+        const auth = getAuth(app);
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let currentUser = null;
+        let isConnected = false;
 
         /* --- ESTADO GLOBAL --- */
         window.apiKey = ""; 
@@ -1236,7 +1269,7 @@
         window.cropTargetInputId = null;
         window.cropPreviewId = null;
         window.cropFileType = 'image/jpeg';
-        window.blobImagenRecortada = null; // Guardará el Blob real de la imagen recortada
+        window.blobImagenRecortada = null;
 
         window.categorias = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
         window.productos = []; 
@@ -1258,73 +1291,109 @@
             youtubeUrl: "https://youtube.com"
         };
 
+        const getCollectionRef = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+        const getDocRef = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+
+        /* ======================================================== */
+        /* INICIALIZACIÓN DE SESIÓN (OBLIGATORIA)                  */
+        /* ======================================================== */
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Error autenticando en Firebase", err);
+                mostrarMensaje("Error de autenticación. Verifica si habilitaste inicio de sesión anónimo.", "error");
+            }
+        };
+
+        function setDbStatus(connected, message = '') {
+            const dot = document.getElementById('db-status-dot');
+            const text = document.getElementById('admin-stat-prods');
+            if(connected) {
+                dot.classList.remove('bg-red-500', 'animate-pulse');
+                dot.classList.add('bg-green-500');
+                text.innerText = message || `${window.productos.length} Productos`;
+            } else {
+                dot.classList.remove('bg-green-500');
+                dot.classList.add('bg-red-500', 'animate-pulse');
+                text.innerText = message || "Desconectado / Error Permisos";
+            }
+        }
+
+        initAuth();
+
         /* ======================================================== */
         /* ESCUCHADORES EN TIEMPO REAL (FIRESTORE -> FRONTEND)    */
         /* ======================================================== */
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (!user) return; 
 
-        // 1. Escuchar la colección de productos
-        onSnapshot(collection(db, "productos"), (snapshot) => {
-            window.productos = []; 
-            let totalProds = 0;
+            // 1. Escuchar la colección de productos
+            onSnapshot(getCollectionRef("productos"), (snapshot) => {
+                window.productos = []; 
+                let totalProds = 0;
 
-            snapshot.forEach((documento) => {
-                const item = documento.data();
-                const id = documento.id;
-                totalProds++;
-
-                window.productos.push({
-                    id: id,
-                    nombre: item.nombre,
-                    categoria: item.categoria,
-                    descripcion: item.descripcion,
-                    imagen: item.urlMultimedia,
-                    stock: item.stock || 'disponible',
-                    storagePath: item.storagePath || ''
+                snapshot.forEach((documento) => {
+                    const item = documento.data();
+                    window.productos.push({
+                        id: documento.id,
+                        nombre: item.nombre,
+                        categoria: item.categoria,
+                        descripcion: item.descripcion,
+                        imagen: item.urlMultimedia,
+                        stock: item.stock || 'disponible',
+                        storagePath: item.storagePath || ''
+                    });
+                    totalProds++;
                 });
+
+                setDbStatus(true, `${totalProds} Productos`);
+                window.renderFilters();
+                window.renderCatalog();
+            }, (error) => {
+                console.error("Error BD:", error);
+                setDbStatus(false, "Permiso Denegado");
+                if (window.isAdmin) window.mostrarMensaje("Base de Datos Bloqueada. Verifica las reglas de Firebase.", "error");
             });
 
-            const counterAdmin = document.getElementById('admin-stat-prods');
-            if (counterAdmin) counterAdmin.innerText = `${totalProds} Productos`;
-
-            window.renderFilters();
-            window.renderCatalog();
-            console.log("🔄 [Firestore] Catálogo de productos sincronizado.");
-        });
-
-        // 2. Escuchar la colección de categorías
-        onSnapshot(collection(db, "categorias"), (snapshot) => {
-            if (!snapshot.empty) {
-                window.categorias = [];
-                snapshot.forEach(doc => {
-                    window.categorias.push(doc.data().nombre);
-                });
-            } else {
-                window.categorias = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
-            }
-            window.actualizarSelectCategorias();
-            window.renderFilters();
-            window.renderCatalog();
-        });
-
-        // 3. Escuchar la colección de configuración de diseño del sitio
-        onSnapshot(collection(db, "configuracion"), (snapshot) => {
-            snapshot.forEach(doc => {
-                if (doc.id === "diseno") {
-                    window.siteSettings = { ...window.siteSettings, ...doc.data() };
+            // 2. Escuchar la colección de categorías
+            onSnapshot(getCollectionRef("categorias"), (snapshot) => {
+                if (!snapshot.empty) {
+                    window.categorias = [];
+                    snapshot.forEach(doc => window.categorias.push(doc.data().nombre));
+                } else {
+                    window.categorias = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
                 }
-            });
-            window.applySiteSettings();
+                window.actualizarSelectCategorias();
+                window.renderFilters();
+                window.renderCatalog();
+            }, (error) => console.error("Error sincronizando categorías:", error));
+
+            // 3. Escuchar la colección de configuración de diseño
+            onSnapshot(getCollectionRef("configuracion"), (snapshot) => {
+                snapshot.forEach(doc => {
+                    if (doc.id === "diseno") {
+                        window.siteSettings = { ...window.siteSettings, ...doc.data() };
+                    }
+                });
+                window.applySiteSettings();
+            }, (error) => console.error("Error sincronizando configuraciones:", error));
         });
 
         /* ======================================================== */
         /* FUNCIONES DE CARGA Y ESCRITURA EN LA NUBE (STORAGE/DB) */
         /* ======================================================== */
 
-        // Subir cualquier archivo multimedia (Blob de Cropper o File) a Firebase Storage
         window.subirArchivoAStorage = async function(coleccion, fileBlob) {
+            if (!currentUser) throw new Error("Requiere autenticación para subir archivos.");
             try {
                 const ext = fileBlob.type?.split('/')[1] || 'webp';
-                const path = `${coleccion}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+                const path = `artifacts/${appId}/public/storage/${coleccion}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
                 const storageRef = ref(storage, path);
                 
                 await uploadBytes(storageRef, fileBlob);
@@ -1336,7 +1405,6 @@
             }
         };
 
-        // Agregar un producto nuevo a Firestore + subida de imagen recortada
         window.agregarProducto = async function() {
             const categoria = document.getElementById('prod-category').value;
             const nombre = document.getElementById('prod-name').value.trim();
@@ -1344,7 +1412,7 @@
             const stock = document.getElementById('prod-stock').value || 'disponible';
             
             if (!categoria || !nombre || !descripcion) {
-                return window.mostrarMensaje('Faltan datos obligatorios (Categoría, Nombre, Descripción)', 'error');
+                return window.mostrarMensaje('Faltan datos obligatorios', 'error');
             }
 
             window.mostrarMensaje("⏳ Guardando nuevo producto...", "info");
@@ -1353,7 +1421,6 @@
                 let urlMultimedia = "";
                 let storagePath = "";
 
-                // Si seleccionaron archivo local y se recortó con Cropper
                 if (window.addImageMode === 'file' && window.blobImagenRecortada) {
                     const uploadResult = await window.subirArchivoAStorage("productos", window.blobImagenRecortada);
                     urlMultimedia = uploadResult.url;
@@ -1362,11 +1429,11 @@
                     urlMultimedia = document.getElementById('prod-image').value.trim();
                 }
 
-                if (!urlMultimedia) {
-                    return window.mostrarMensaje('Por favor, agrega una URL de imagen o sube un archivo.', 'error');
+                if (!urlMultimedia || urlMultimedia === "[Archivo Recortado]") {
+                    return window.mostrarMensaje('Por favor, agrega una URL de imagen válida o recorta un archivo.', 'error');
                 }
 
-                await addDoc(collection(db, "productos"), {
+                await addDoc(getCollectionRef("productos"), {
                     nombre,
                     categoria,
                     descripcion,
@@ -1384,12 +1451,10 @@
                 window.cerrarModalAdd();
                 window.mostrarMensaje("✅ ¡Producto subido con éxito a la nube!", "success");
             } catch (error) {
-                console.error(error);
-                window.mostrarMensaje("❌ Error al guardar en Firebase", "error");
+                window.mostrarMensaje("❌ Error al guardar: " + error.message, "error");
             }
         };
 
-        // Guardar edición de un producto existente en Firestore
         window.guardarEdicion = async function() {
             const id = document.getElementById('edit-prod-id').value;
             const nombre = document.getElementById('edit-prod-name').value.trim();
@@ -1397,9 +1462,7 @@
             const descripcion = document.getElementById('edit-prod-desc').value.trim();
             const stock = document.getElementById('edit-prod-stock').value;
 
-            if (!categoria || !nombre || !descripcion) {
-                return window.mostrarMensaje('Todos los campos son obligatorios', 'error');
-            }
+            if (!categoria || !nombre || !descripcion) return window.mostrarMensaje('Todos los campos son obligatorios', 'error');
 
             window.mostrarMensaje("⏳ Guardando cambios en la nube...", "info");
 
@@ -1407,21 +1470,22 @@
                 let urlMultimedia = document.getElementById('edit-prod-image').value.trim();
                 let storagePath = "";
 
-                // Si el usuario cargó un archivo recortado con Cropper para este cambio
                 if (window.editImageMode === 'file' && window.blobImagenRecortada) {
                     const uploadResult = await window.subirArchivoAStorage("productos", window.blobImagenRecortada);
                     urlMultimedia = uploadResult.url;
                     storagePath = uploadResult.path;
                     
-                    // Borramos la imagen vieja de Storage si existía
                     const anterior = window.productos.find(p => p.id === id);
                     if (anterior && anterior.storagePath) {
                         try { await deleteObject(ref(storage, anterior.storagePath)); } catch(e){}
                     }
                 }
 
-                const docRef = doc(db, "productos", id);
-                const actualizacion = { nombre, categoria, descripcion, stock, urlMultimedia };
+                if (urlMultimedia === "[Archivo Recortado]") urlMultimedia = ""; 
+
+                const docRef = getDocRef("productos", id);
+                const actualizacion = { nombre, categoria, descripcion, stock };
+                if (urlMultimedia) actualizacion.urlMultimedia = urlMultimedia;
                 if (storagePath) actualizacion.storagePath = storagePath;
 
                 await updateDoc(docRef, actualizacion);
@@ -1430,31 +1494,26 @@
                 window.cerrarModalEditar();
                 window.mostrarMensaje("✅ ¡Producto actualizado con éxito!", "success");
             } catch (error) {
-                console.error(error);
-                window.mostrarMensaje("❌ Error al actualizar en la nube", "error");
+                window.mostrarMensaje("❌ Error al actualizar: " + error.message, "error");
             }
         };
 
-        // Eliminar producto de Firestore y Storage físico
-        window.eliminarProducto = async function(id, event) {
+        window.eliminarProducto = function(id, event) {
             if (event) event.stopPropagation();
-            if (confirm('¿Estás seguro de eliminar este producto definitivamente de la nube?')) {
+            window.confirmarAccion('¿Estás seguro de eliminar este producto definitivamente de la nube?', async () => {
                 try {
                     const prod = window.productos.find(p => p.id === id);
                     if (prod && prod.storagePath) {
-                        try {
-                            await deleteObject(ref(storage, prod.storagePath));
-                        } catch (e) { console.warn("El archivo multimedia no existía en Storage."); }
+                        try { await deleteObject(ref(storage, prod.storagePath)); } catch (e) {}
                     }
-                    await deleteDoc(doc(db, "productos", id));
-                    window.mostrarMensaje('🗑️ Producto eliminado del catálogo.');
+                    await deleteDoc(getDocRef("productos", id));
+                    window.mostrarMensaje('🗑️ Producto eliminado del catálogo.', 'success');
                 } catch (error) {
-                    window.mostrarMensaje('❌ Error al eliminar de la nube.', 'error');
+                    window.mostrarMensaje('❌ Error al eliminar: ' + error.message, 'error');
                 }
-            }
+            });
         };
 
-        // Crear una categoría nueva en Firestore
         window.agregarCategoria = async function() {
             const input = document.getElementById('new-category-name');
             const nombre = input.value.trim();
@@ -1462,19 +1521,18 @@
             if (window.categorias.includes(nombre)) return window.mostrarMensaje('La categoría ya existe', 'error');
 
             try {
-                await addDoc(collection(db, "categorias"), { nombre });
+                await addDoc(getCollectionRef("categorias"), { nombre });
                 input.value = '';
                 window.mostrarMensaje(`Categoría '${nombre}' creada con éxito.`);
             } catch (error) {
-                window.mostrarMensaje('Error al crear la categoría en la nube.', 'error');
+                window.mostrarMensaje('Error al crear: ' + error.message, 'error');
             }
         };
 
-        // Guardar cambios de diseño y ofertas (Settings) en Firestore
         window.guardarSettings = async function() {
             window.mostrarMensaje("⏳ Guardando configuración de diseño...", "info");
 
-            const disenoRef = doc(db, "configuracion", "diseno");
+            const disenoRef = getDocRef("configuracion", "diseno");
             const nuevosAjustes = {
                 bannerActive: document.getElementById('set-banner-active').checked,
                 bannerText: document.getElementById('set-banner-text').value,
@@ -1496,26 +1554,23 @@
             try {
                 await setDoc(disenoRef, nuevosAjustes);
                 window.cerrarModalSettings();
-                window.mostrarMensaje("✅ ¡Configuración general guardada exitosamente!", "success");
+                window.mostrarMensaje("✅ ¡Configuración guardada exitosamente!", "success");
             } catch (error) {
-                console.error(error);
-                window.mostrarMensaje("❌ Error al guardar el diseño", "error");
+                window.mostrarMensaje("❌ Error al guardar diseño: " + error.message, "error");
             }
         };
 
-        // Subir imágenes directamente al Storage desde el panel de diseño
         window.subirImagenDiseno = async function(fileBlob, targetInputId) {
             window.mostrarMensaje("⏳ Subiendo imagen de diseño...", "info");
             try {
                 const uploadResult = await window.subirArchivoAStorage("configuracion", fileBlob);
                 document.getElementById(targetInputId).value = uploadResult.url;
-                window.mostrarMensaje("✅ Imagen de diseño subida correctamente.", "success");
+                window.mostrarMensaje("✅ Imagen subida correctamente.", "success");
             } catch (err) {
                 window.mostrarMensaje("❌ Error al subir la imagen", "error");
             }
         };
 
-        // Modificamos processSettingFile para abrir Cropper y subir directo a configuracion
         window.processSettingFile = function(inputEl, targetInputId) {
             const file = inputEl.files[0];
             if (file) {
@@ -1523,43 +1578,6 @@
             }
             inputEl.value = ''; 
         };
-
-        /* --- MIGRACIÓN DE RESPALDO DE LOCALSTORAGE / INDEXEDDB --- */
-        async function migrarLocalStorageAFirebase() {
-            const claveLocal = localStorage.getItem("catalogoEncom_v2") || localStorage.getItem("productos");
-            if (!claveLocal) return;
-
-            try {
-                const listaViejos = JSON.parse(claveLocal);
-                if (!Array.isArray(listaViejos) || listaViejos.length === 0) return;
-
-                console.log(`⏳ Migración: Detectados ${listaViejos.length} productos locales. Traspasando...`);
-                window.mostrarMensaje(`Mudando ${listaViejos.length} productos locales a la nube...`, "info");
-                
-                for (const prod of listaViejos) {
-                    await addDoc(collection(db, "productos"), {
-                        nombre: prod.nombre || "Producto Viejo",
-                        descripcion: prod.descripcion || "",
-                        categoria: prod.categoria || "General",
-                        stock: prod.stock || "disponible",
-                        urlMultimedia: prod.imagen || "", 
-                        storagePath: "migrado_desde_localstorage",
-                        fechaCreacion: serverTimestamp()
-                    });
-                }
-
-                localStorage.removeItem("catalogoEncom_v2");
-                localStorage.removeItem("productos");
-                window.mostrarMensaje("✅ ¡Felicidades! Todos tus productos anteriores ya están en la nube.", "success");
-            } catch (e) {
-                console.error("Error migrando:", e);
-            }
-        }
-
-        // Ejecutar migración de respaldo después del arranque
-        document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(migrarLocalStorageAFirebase, 3000);
-        });
 
     </script>
 
@@ -1582,9 +1600,25 @@
             return getYouTubeId(url) !== null;
         }
 
+        /* --- MODAL CONFIRMACION DE ACCION --- */
+        window.confirmarAccion = function(mensaje, callback) {
+            const modal = document.getElementById('confirm-modal');
+            modal.querySelector('p').innerText = mensaje;
+            modal.classList.add('active');
+            
+            document.getElementById('btn-cancel-confirm').onclick = () => {
+                modal.classList.remove('active');
+            };
+
+            document.getElementById('btn-accept-confirm').onclick = () => {
+                modal.classList.remove('active');
+                callback();
+            };
+        };
+
         /* --- VISOR DE IMÁGENES Y VIDEOS (LIGHTBOX) --- */
         function abrirVisorImagen(src) {
-            if (!src) return;
+            if (!src || src === "[Archivo Recortado]") return;
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
             const videoContainer = document.getElementById('lightbox-video-container');
@@ -1860,7 +1894,7 @@
                     await window.subirImagenDiseno(blob, window.cropTargetInputId);
                 } else {
                     const targetInput = document.getElementById(window.cropTargetInputId);
-                    if (targetInput) {
+                    if (targetInput && targetInput.type !== 'file') {
                         targetInput.value = "[Archivo Recortado]";
                     }
                 }
