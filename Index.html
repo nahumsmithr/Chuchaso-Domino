@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <!-- HEADER PRINCIPAL UNIFICADO (Elimina los brincos al hacer scroll) -->
+    <!-- HEADER PRINCIPAL UNIFICADO -->
     <header id="main-header" class="fixed top-0 w-full z-50 transition-[top] duration-300 ease-in-out">
         
         <!-- BANNER PROMOCIONAL -->
@@ -372,7 +372,7 @@
                         <div class="w-20 h-20 mx-auto bg-[#0a0a0a] border-4 border-encom-yellow text-encom-yellow rounded-full flex items-center justify-center text-2xl font-extrabold transition-all duration-300 mb-6 relative shadow-[0_0_20px_rgba(255,214,0,0.3)]">
                             3
                         </div>
-                        <h3 class="text-lg font-bold uppercase mb-2 text-encom-yellow">Instalación < 30 Días</h3>
+                        <h3 class="text-lg font-bold uppercase mb-2 text-encom-yellow">Instalación &lt; 30 Días</h3>
                         <p class="text-zinc-400 text-sm leading-relaxed px-2">Nuestros peritos realizan la instalación completa, limpia y garantizada en un tiempo récord en la industria.</p>
                     </div>
                     <div class="relative z-10 text-center animate-on-scroll group" style="transition-delay: 450ms;">
@@ -549,7 +549,7 @@
 
         <!-- Grid de Productos -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto animate-on-scroll" id="catalog-grid">
-            <!-- Renderizados por JS -->
+            <!-- Renderizados por JS de Firestore -->
         </div>
         
         <!-- Mensaje de Catálogo Vacío -->
@@ -767,7 +767,7 @@
         </div>
     </footer>
 
-    <!-- --- BOTÓN Y VENTANA DE CHATBOT IA --- -->
+    <!-- BOTÓN Y VENTANA DE CHATBOT IA -->
     <button onclick="toggleChatWindow()" class="fixed bottom-6 left-6 bg-encom-dark border-2 border-encom-yellow text-encom-yellow px-6 py-3 rounded-full font-bold shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-50 flex items-center gap-2 hover:bg-encom-yellow hover:text-black transition-all group">
         <i class="ph-fill ph-robot text-xl group-hover:animate-bounce"></i> Asistente IA
     </button>
@@ -860,58 +860,60 @@
         </div>
     </div>
 
-    <!-- MODAL CMS: Añadir Producto -->
+    <!-- MODAL CMS: Añadir Producto (Formulario Conectado) -->
     <div id="add-modal" class="modal-overlay fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[100] p-4" onclick="cerrarModalAdd(event)">
         <div class="modal-content bg-encom-dark rounded-2xl border-t-4 border-green-500 max-w-2xl w-full p-8 shadow-2xl relative" onclick="event.stopPropagation()">
             <button onclick="cerrarModalAdd()" class="absolute top-4 right-4 text-zinc-500 hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
             <h2 class="text-2xl font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2"><i class="ph-bold ph-plus-circle text-green-500"></i> Añadir Producto</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm text-zinc-400 font-bold mt-2">Categoría:</label>
-                    <select id="prod-category" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 text-white w-full"></select>
+            <form id="form-producto" class="space-y-4" onsubmit="event.preventDefault(); window.agregarProducto();">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm text-zinc-400 font-bold mt-2">Categoría:</label>
+                        <select id="prod-category" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 text-white w-full" required></select>
+                        
+                        <label class="text-sm text-zinc-400 font-bold mt-2">Nombre del Producto:</label>
+                        <input type="text" id="prod-name" placeholder="Ej: Growatt 3600W" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500" required>
+                        
+                        <label class="text-sm text-zinc-400 font-bold mt-2">Estado del Inventario:</label>
+                        <select id="prod-stock" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 text-white w-full">
+                            <option value="disponible">En Stock (Visible para comprar)</option>
+                            <option value="agotado">Agotado (Visible con sello)</option>
+                            <option value="oculto">Oculto (Borrador interno)</option>
+                        </select>
+                    </div>
                     
-                    <label class="text-sm text-zinc-400 font-bold mt-2">Nombre del Producto:</label>
-                    <input type="text" id="prod-name" placeholder="Ej: Growatt 3600W" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500">
-                    
-                    <label class="text-sm text-zinc-400 font-bold mt-2">Estado del Inventario:</label>
-                    <select id="prod-stock" class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 text-white w-full">
-                        <option value="disponible">En Stock (Visible para comprar)</option>
-                        <option value="agotado">Agotado (Visible con sello)</option>
-                        <option value="oculto">Oculto (Borrador interno)</option>
-                    </select>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm text-zinc-400 font-bold">Imagen o Video:</label>
+                            <div class="bg-black border border-zinc-700 p-1 rounded-lg flex gap-1">
+                                <button type="button" id="add-tab-url" onclick="toggleImageMode('add', 'url')" class="px-3 py-1 rounded-md bg-zinc-800 text-white text-xs font-bold transition-all">URL</button>
+                                <button type="button" id="add-tab-file" onclick="toggleImageMode('add', 'file')" class="px-3 py-1 rounded-md text-zinc-400 hover:text-white text-xs font-bold transition-all">Archivo</button>
+                            </div>
+                        </div>
+                        
+                        <input type="url" id="prod-image" placeholder="Pega URL de YouTube o Imagen..." class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 w-full transition-all" oninput="previewImage('prod-image', 'add-img-preview')">
+                        <input type="file" id="prod-image-file" accept="image/*" class="hidden bg-black/50 border border-zinc-700 rounded-lg px-4 py-2 w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-green-500 file:text-white hover:file:bg-green-400 transition-all" onchange="previewLocalImage(this, 'add-img-preview')">
+                        
+                        <div class="w-full h-32 rounded-lg border border-zinc-700 bg-[#050505] flex items-center justify-center overflow-hidden relative cursor-pointer" onclick="abrirVisorImagen(document.getElementById('prod-image').value || document.getElementById('add-img-preview').src)">
+                            <img id="add-img-preview" src="" alt="Vista previa" class="max-w-full max-h-full object-cover hidden">
+                            <span id="add-img-placeholder" class="text-zinc-600 text-sm flex flex-col items-center gap-1"><i class="ph-fill ph-image text-2xl"></i> Vista previa</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-center">
-                        <label class="text-sm text-zinc-400 font-bold">Imagen o Video (YouTube):</label>
-                        <div class="bg-black border border-zinc-700 p-1 rounded-lg flex gap-1">
-                            <button id="add-tab-url" onclick="toggleImageMode('add', 'url')" class="px-3 py-1 rounded-md bg-zinc-800 text-white text-xs font-bold transition-all">URL</button>
-                            <button id="add-tab-file" onclick="toggleImageMode('add', 'file')" class="px-3 py-1 rounded-md text-zinc-400 hover:text-white text-xs font-bold transition-all">Archivo</button>
-                        </div>
+                        <label class="text-sm text-zinc-400 font-bold">Descripción:</label>
+                        <button type="button" onclick="generarDescripcionIA()" class="text-xs bg-purple-600/20 text-purple-400 hover:text-white hover:bg-purple-600 px-3 py-1 rounded-md font-bold transition-all flex items-center gap-1" title="Autocompletar con IA">
+                            <i class="ph-fill ph-magic-wand"></i> Generar con IA
+                        </button>
                     </div>
-                    
-                    <input type="url" id="prod-image" placeholder="Pega URL de YouTube o Imagen..." class="bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 w-full transition-all" oninput="previewImage('prod-image', 'add-img-preview')">
-                    <input type="file" id="prod-image-file" accept="image/*" class="hidden bg-black/50 border border-zinc-700 rounded-lg px-4 py-2 w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-green-500 file:text-white hover:file:bg-green-400 transition-all" onchange="previewLocalImage(this, 'add-img-preview')">
-                    
-                    <div class="w-full h-32 rounded-lg border border-zinc-700 bg-[#050505] flex items-center justify-center overflow-hidden relative cursor-pointer" onclick="abrirVisorImagen(document.getElementById('prod-image').value || document.getElementById('add-img-preview').src)">
-                        <img id="add-img-preview" src="" alt="Vista previa" class="max-w-full max-h-full object-cover hidden">
-                        <span id="add-img-placeholder" class="text-zinc-600 text-sm flex flex-col items-center gap-1"><i class="ph-fill ph-image text-2xl"></i> Vista previa</span>
-                    </div>
+                    <textarea id="prod-desc" rows="4" placeholder="Descripción atractiva del producto..." class="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 resize-none" required></textarea>
                 </div>
-            </div>
-            
-            <div class="flex flex-col gap-2 mb-6">
-                <div class="flex justify-between items-center">
-                    <label class="text-sm text-zinc-400 font-bold">Descripción:</label>
-                    <button onclick="generarDescripcionIA()" class="text-xs bg-purple-600/20 text-purple-400 hover:text-white hover:bg-purple-600 px-3 py-1 rounded-md font-bold transition-all flex items-center gap-1" title="Autocompletar con IA">
-                        <i class="ph-fill ph-magic-wand"></i> Generar con IA
-                    </button>
-                </div>
-                <textarea id="prod-desc" rows="4" placeholder="Descripción atractiva del producto..." class="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 resize-none"></textarea>
-            </div>
-            
-            <button onclick="agregarProducto()" class="w-full bg-green-500 text-white py-3 rounded-lg font-extrabold uppercase hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all">Guardar Producto</button>
+                
+                <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-extrabold uppercase hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all">Guardar Producto</button>
+            </form>
         </div>
     </div>
 
@@ -959,12 +961,6 @@
                     input:checked ~ .dot { transform: translateX(100%); background-color: #FFD600; }
                     input:checked ~ .block { background-color: rgba(255, 214, 0, 0.3); }
                 </style>
-                <script>
-                    document.getElementById('set-banner-active').addEventListener('change', function() {
-                        document.getElementById('banner-status-text').innerText = this.checked ? 'Encendido' : 'Apagado';
-                        document.getElementById('banner-status-text').style.color = this.checked ? '#FFD600' : 'white';
-                    });
-                </script>
 
                 <!-- SECCIÓN DE LOGO -->
                 <div class="bg-black/30 p-4 rounded-xl border border-encom-yellow/50 mt-6">
@@ -1101,18 +1097,18 @@
                 </div>
             </div>
             <!-- SECCIÓN DE RESPALDO DE DATOS -->
-                <div class="w-full h-px bg-white/10 my-4"></div>
-                <h3 class="text-lg font-bold text-encom-yellow mb-2"><i class="ph-bold ph-database"></i> Copia de Seguridad (Backup)</h3>
-                <p class="text-zinc-400 text-sm mb-4">Descarga todo tu catálogo, imágenes y configuraciones a un archivo para no perder nada.</p>
-                <div class="flex gap-4">
-                    <button onclick="exportarDatos()" class="flex-1 bg-zinc-800 text-white py-2 rounded-lg font-bold hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-download-simple"></i> Exportar Respaldo
-                    </button>
-                    <label class="flex-1 bg-zinc-800 text-white py-2 rounded-lg font-bold hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="ph-bold ph-upload-simple"></i> Importar Respaldo
-                        <input type="file" accept=".json" class="hidden" onchange="importarDatos(this)">
-                    </label>
-                </div>
+            <div class="w-full h-px bg-white/10 my-4"></div>
+            <h3 class="text-lg font-bold text-encom-yellow mb-2"><i class="ph-bold ph-database"></i> Copia de Seguridad (Backup)</h3>
+            <p class="text-zinc-400 text-sm mb-4">Descarga todo tu catálogo, imágenes y configuraciones a un archivo para no perder nada.</p>
+            <div class="flex gap-4">
+                <button onclick="exportarDatos()" class="flex-1 bg-zinc-800 text-white py-2 rounded-lg font-bold hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-download-simple"></i> Exportar Respaldo
+                </button>
+                <label class="flex-1 bg-zinc-800 text-white py-2 rounded-lg font-bold hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="ph-bold ph-upload-simple"></i> Importar Respaldo
+                    <input type="file" accept=".json" class="hidden" onchange="importarDatos(this)">
+                </label>
+            </div>
 
             <button onclick="guardarSettings()" class="w-full mt-6 bg-purple-500 text-white py-3 rounded-xl font-extrabold uppercase hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all">Guardar Cambios</button>
         </div>
@@ -1198,9 +1194,378 @@
     <!-- Contenedor de Toasts -->
     <div id="toast-container" class="fixed bottom-6 right-6 flex flex-col gap-3 z-[600]"></div>
 
-    <!-- --- SCRIPTS LÓGICOS --- -->
+    <!-- ======================================================== -->
+    <!--  SCRIPT CONEXIÓN Y SINCRONIZACIÓN TOTAL CON FIREBASE      -->
+    <!-- ======================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { 
+            getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Configuración oficial de tu aplicación de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxf6PDYRSlKNHBukSxjGnDaNa49IRmjlU",
+            authDomain: "encom-power-app.firebaseapp.com",
+            projectId: "encom-power-app",
+            storageBucket: "encom-power-app.firebasestorage.app",
+            messagingSenderId: "537505362531",
+            appId: "1:537505362531:web:941c0af77fcd151edf7e5",
+            measurementId: "G-X99K2MF1RG"
+        };
+
+        // Inicializamos los servicios
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        console.log("🚀 [Firebase] Conexión establecida de manera exitosa con Firestore y Storage.");
+
+        /* --- ESTADO GLOBAL --- */
+        window.apiKey = ""; 
+        window.isAdmin = false;
+        window.filtroActual = 'Todas';
+        window.addImageMode = 'url';
+        window.editImageMode = 'url';
+        window.navOffsetCached = 0; 
+        
+        window.cropperInstance = null;
+        window.cropTargetInputId = null;
+        window.cropPreviewId = null;
+        window.cropFileType = 'image/jpeg';
+        window.blobImagenRecortada = null; // Guardará el Blob real de la imagen recortada
+
+        window.categorias = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
+        window.productos = []; 
+        window.siteSettings = {
+            bannerActive: true,
+            bannerText: "⚡ OFERTA LIMITADA: Bono de $500 en tu instalación solar. ¡Cotiza hoy!",
+            logoUrl: "https://ui-avatars.com/api/?name=Encom+Power&background=FFD600&color=000&size=200&font-size=0.33&bold=true",
+            heroBg: "https://images.unsplash.com/photo-1509391366360-1e97f52ce23b?auto=format&fit=crop&w=1920&q=80",
+            servicio1: "https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&w=1000&q=80",
+            servicio2: "https://images.unsplash.com/photo-1593941707882-a5bba14938cb?auto=format&fit=crop&w=1000&q=80",
+            servicio3: "https://images.unsplash.com/photo-1509391366360-1e97f52ce23b?auto=format&fit=crop&w=1000&q=80",
+            appUrl: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=600&q=80",
+            galeria1: "https://images.unsplash.com/photo-1611365892590-b1d5c21f3576?auto=format&fit=crop&w=600&q=80",
+            galeria2: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80",
+            galeria3: "https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&w=600&q=80",
+            galeria4: "https://images.unsplash.com/photo-1593941707882-a5bba14938cb?auto=format&fit=crop&w=600&q=80",
+            facebookUrl: "https://facebook.com",
+            instagramUrl: "https://instagram.com",
+            youtubeUrl: "https://youtube.com"
+        };
+
+        /* ======================================================== */
+        /* ESCUCHADORES EN TIEMPO REAL (FIRESTORE -> FRONTEND)    */
+        /* ======================================================== */
+
+        // 1. Escuchar la colección de productos
+        onSnapshot(collection(db, "productos"), (snapshot) => {
+            window.productos = []; 
+            let totalProds = 0;
+
+            snapshot.forEach((documento) => {
+                const item = documento.data();
+                const id = documento.id;
+                totalProds++;
+
+                window.productos.push({
+                    id: id,
+                    nombre: item.nombre,
+                    categoria: item.categoria,
+                    descripcion: item.descripcion,
+                    imagen: item.urlMultimedia,
+                    stock: item.stock || 'disponible',
+                    storagePath: item.storagePath || ''
+                });
+            });
+
+            const counterAdmin = document.getElementById('admin-stat-prods');
+            if (counterAdmin) counterAdmin.innerText = `${totalProds} Productos`;
+
+            window.renderFilters();
+            window.renderCatalog();
+            console.log("🔄 [Firestore] Catálogo de productos sincronizado.");
+        });
+
+        // 2. Escuchar la colección de categorías
+        onSnapshot(collection(db, "categorias"), (snapshot) => {
+            if (!snapshot.empty) {
+                window.categorias = [];
+                snapshot.forEach(doc => {
+                    window.categorias.push(doc.data().nombre);
+                });
+            } else {
+                window.categorias = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
+            }
+            window.actualizarSelectCategorias();
+            window.renderFilters();
+            window.renderCatalog();
+        });
+
+        // 3. Escuchar la colección de configuración de diseño del sitio
+        onSnapshot(collection(db, "configuracion"), (snapshot) => {
+            snapshot.forEach(doc => {
+                if (doc.id === "diseno") {
+                    window.siteSettings = { ...window.siteSettings, ...doc.data() };
+                }
+            });
+            window.applySiteSettings();
+        });
+
+        /* ======================================================== */
+        /* FUNCIONES DE CARGA Y ESCRITURA EN LA NUBE (STORAGE/DB) */
+        /* ======================================================== */
+
+        // Subir cualquier archivo multimedia (Blob de Cropper o File) a Firebase Storage
+        window.subirArchivoAStorage = async function(coleccion, fileBlob) {
+            try {
+                const ext = fileBlob.type?.split('/')[1] || 'webp';
+                const path = `${coleccion}/${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+                const storageRef = ref(storage, path);
+                
+                await uploadBytes(storageRef, fileBlob);
+                const url = await getDownloadURL(storageRef);
+                return { url, path };
+            } catch (err) {
+                console.error("Error subiendo a Storage:", err);
+                throw err;
+            }
+        };
+
+        // Agregar un producto nuevo a Firestore + subida de imagen recortada
+        window.agregarProducto = async function() {
+            const categoria = document.getElementById('prod-category').value;
+            const nombre = document.getElementById('prod-name').value.trim();
+            const descripcion = document.getElementById('prod-desc').value.trim();
+            const stock = document.getElementById('prod-stock').value || 'disponible';
+            
+            if (!categoria || !nombre || !descripcion) {
+                return window.mostrarMensaje('Faltan datos obligatorios (Categoría, Nombre, Descripción)', 'error');
+            }
+
+            window.mostrarMensaje("⏳ Guardando nuevo producto...", "info");
+
+            try {
+                let urlMultimedia = "";
+                let storagePath = "";
+
+                // Si seleccionaron archivo local y se recortó con Cropper
+                if (window.addImageMode === 'file' && window.blobImagenRecortada) {
+                    const uploadResult = await window.subirArchivoAStorage("productos", window.blobImagenRecortada);
+                    urlMultimedia = uploadResult.url;
+                    storagePath = uploadResult.path;
+                } else {
+                    urlMultimedia = document.getElementById('prod-image').value.trim();
+                }
+
+                if (!urlMultimedia) {
+                    return window.mostrarMensaje('Por favor, agrega una URL de imagen o sube un archivo.', 'error');
+                }
+
+                await addDoc(collection(db, "productos"), {
+                    nombre,
+                    categoria,
+                    descripcion,
+                    stock,
+                    urlMultimedia,
+                    storagePath,
+                    fechaCreacion: serverTimestamp()
+                });
+
+                document.getElementById('form-producto').reset();
+                window.blobImagenRecortada = null;
+                document.getElementById('add-img-preview').classList.add('hidden');
+                document.getElementById('add-img-placeholder').classList.remove('hidden');
+                
+                window.cerrarModalAdd();
+                window.mostrarMensaje("✅ ¡Producto subido con éxito a la nube!", "success");
+            } catch (error) {
+                console.error(error);
+                window.mostrarMensaje("❌ Error al guardar en Firebase", "error");
+            }
+        };
+
+        // Guardar edición de un producto existente en Firestore
+        window.guardarEdicion = async function() {
+            const id = document.getElementById('edit-prod-id').value;
+            const nombre = document.getElementById('edit-prod-name').value.trim();
+            const categoria = document.getElementById('edit-prod-category').value;
+            const descripcion = document.getElementById('edit-prod-desc').value.trim();
+            const stock = document.getElementById('edit-prod-stock').value;
+
+            if (!categoria || !nombre || !descripcion) {
+                return window.mostrarMensaje('Todos los campos son obligatorios', 'error');
+            }
+
+            window.mostrarMensaje("⏳ Guardando cambios en la nube...", "info");
+
+            try {
+                let urlMultimedia = document.getElementById('edit-prod-image').value.trim();
+                let storagePath = "";
+
+                // Si el usuario cargó un archivo recortado con Cropper para este cambio
+                if (window.editImageMode === 'file' && window.blobImagenRecortada) {
+                    const uploadResult = await window.subirArchivoAStorage("productos", window.blobImagenRecortada);
+                    urlMultimedia = uploadResult.url;
+                    storagePath = uploadResult.path;
+                    
+                    // Borramos la imagen vieja de Storage si existía
+                    const anterior = window.productos.find(p => p.id === id);
+                    if (anterior && anterior.storagePath) {
+                        try { await deleteObject(ref(storage, anterior.storagePath)); } catch(e){}
+                    }
+                }
+
+                const docRef = doc(db, "productos", id);
+                const actualizacion = { nombre, categoria, descripcion, stock, urlMultimedia };
+                if (storagePath) actualizacion.storagePath = storagePath;
+
+                await updateDoc(docRef, actualizacion);
+
+                window.blobImagenRecortada = null;
+                window.cerrarModalEditar();
+                window.mostrarMensaje("✅ ¡Producto actualizado con éxito!", "success");
+            } catch (error) {
+                console.error(error);
+                window.mostrarMensaje("❌ Error al actualizar en la nube", "error");
+            }
+        };
+
+        // Eliminar producto de Firestore y Storage físico
+        window.eliminarProducto = async function(id, event) {
+            if (event) event.stopPropagation();
+            if (confirm('¿Estás seguro de eliminar este producto definitivamente de la nube?')) {
+                try {
+                    const prod = window.productos.find(p => p.id === id);
+                    if (prod && prod.storagePath) {
+                        try {
+                            await deleteObject(ref(storage, prod.storagePath));
+                        } catch (e) { console.warn("El archivo multimedia no existía en Storage."); }
+                    }
+                    await deleteDoc(doc(db, "productos", id));
+                    window.mostrarMensaje('🗑️ Producto eliminado del catálogo.');
+                } catch (error) {
+                    window.mostrarMensaje('❌ Error al eliminar de la nube.', 'error');
+                }
+            }
+        };
+
+        // Crear una categoría nueva en Firestore
+        window.agregarCategoria = async function() {
+            const input = document.getElementById('new-category-name');
+            const nombre = input.value.trim();
+            if (!nombre) return window.mostrarMensaje('Ingresa un nombre para la categoría', 'error');
+            if (window.categorias.includes(nombre)) return window.mostrarMensaje('La categoría ya existe', 'error');
+
+            try {
+                await addDoc(collection(db, "categorias"), { nombre });
+                input.value = '';
+                window.mostrarMensaje(`Categoría '${nombre}' creada con éxito.`);
+            } catch (error) {
+                window.mostrarMensaje('Error al crear la categoría en la nube.', 'error');
+            }
+        };
+
+        // Guardar cambios de diseño y ofertas (Settings) en Firestore
+        window.guardarSettings = async function() {
+            window.mostrarMensaje("⏳ Guardando configuración de diseño...", "info");
+
+            const disenoRef = doc(db, "configuracion", "diseno");
+            const nuevosAjustes = {
+                bannerActive: document.getElementById('set-banner-active').checked,
+                bannerText: document.getElementById('set-banner-text').value,
+                logoUrl: document.getElementById('set-logo-url').value,
+                heroBg: document.getElementById('set-hero-url').value,
+                servicio1: document.getElementById('set-s1-url').value,
+                servicio2: document.getElementById('set-s2-url').value,
+                servicio3: document.getElementById('set-s3-url').value,
+                appUrl: document.getElementById('set-app-url').value,
+                galeria1: document.getElementById('set-g1-url').value,
+                galeria2: document.getElementById('set-g2-url').value,
+                galeria3: document.getElementById('set-g3-url').value,
+                galeria4: document.getElementById('set-g4-url').value,
+                facebookUrl: document.getElementById('set-fb-url').value,
+                instagramUrl: document.getElementById('set-ig-url').value,
+                youtubeUrl: document.getElementById('set-yt-url').value
+            };
+
+            try {
+                await setDoc(disenoRef, nuevosAjustes);
+                window.cerrarModalSettings();
+                window.mostrarMensaje("✅ ¡Configuración general guardada exitosamente!", "success");
+            } catch (error) {
+                console.error(error);
+                window.mostrarMensaje("❌ Error al guardar el diseño", "error");
+            }
+        };
+
+        // Subir imágenes directamente al Storage desde el panel de diseño
+        window.subirImagenDiseno = async function(fileBlob, targetInputId) {
+            window.mostrarMensaje("⏳ Subiendo imagen de diseño...", "info");
+            try {
+                const uploadResult = await window.subirArchivoAStorage("configuracion", fileBlob);
+                document.getElementById(targetInputId).value = uploadResult.url;
+                window.mostrarMensaje("✅ Imagen de diseño subida correctamente.", "success");
+            } catch (err) {
+                window.mostrarMensaje("❌ Error al subir la imagen", "error");
+            }
+        };
+
+        // Modificamos processSettingFile para abrir Cropper y subir directo a configuracion
+        window.processSettingFile = function(inputEl, targetInputId) {
+            const file = inputEl.files[0];
+            if (file) {
+                window.iniciarCropper(file, targetInputId, null, true);
+            }
+            inputEl.value = ''; 
+        };
+
+        /* --- MIGRACIÓN DE RESPALDO DE LOCALSTORAGE / INDEXEDDB --- */
+        async function migrarLocalStorageAFirebase() {
+            const claveLocal = localStorage.getItem("catalogoEncom_v2") || localStorage.getItem("productos");
+            if (!claveLocal) return;
+
+            try {
+                const listaViejos = JSON.parse(claveLocal);
+                if (!Array.isArray(listaViejos) || listaViejos.length === 0) return;
+
+                console.log(`⏳ Migración: Detectados ${listaViejos.length} productos locales. Traspasando...`);
+                window.mostrarMensaje(`Mudando ${listaViejos.length} productos locales a la nube...`, "info");
+                
+                for (const prod of listaViejos) {
+                    await addDoc(collection(db, "productos"), {
+                        nombre: prod.nombre || "Producto Viejo",
+                        descripcion: prod.descripcion || "",
+                        categoria: prod.categoria || "General",
+                        stock: prod.stock || "disponible",
+                        urlMultimedia: prod.imagen || "", 
+                        storagePath: "migrado_desde_localstorage",
+                        fechaCreacion: serverTimestamp()
+                    });
+                }
+
+                localStorage.removeItem("catalogoEncom_v2");
+                localStorage.removeItem("productos");
+                window.mostrarMensaje("✅ ¡Felicidades! Todos tus productos anteriores ya están en la nube.", "success");
+            } catch (e) {
+                console.error("Error migrando:", e);
+            }
+        }
+
+        // Ejecutar migración de respaldo después del arranque
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(migrarLocalStorageAFirebase, 3000);
+        });
+
+    </script>
+
+    <!-- --- COMPORTAMIENTOS DINÁMICOS DE LA PÁGINA WEB --- -->
     <script>
-        /* --- UTILIDADES PARA VIDEO (YOUTUBE) --- */
+        /* --- UTILIDADES MULTIMEDIA (YOUTUBE PORTADAS) --- */
         function getYouTubeId(url) {
             if (!url || typeof url !== 'string') return null;
             const regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -1260,70 +1625,13 @@
             }, 300);
         }
 
-
-        /* --- BASE DE DATOS LOCAL PRO (IndexedDB) --- */
-        const DB = {
-            init() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('EncomPowerDB', 1);
-                    request.onupgradeneeded = (e) => {
-                        const db = e.target.result;
-                        if (!db.objectStoreNames.contains('store')) {
-                            db.createObjectStore('store');
-                        }
-                    };
-                    request.onsuccess = (e) => resolve(e.target.result);
-                    request.onerror = (e) => reject(e.target.error);
-                });
-            },
-            async get(key) {
-                const db = await this.init();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('store', 'readonly');
-                    const store = tx.objectStore('store');
-                    const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            },
-            async set(key, value) {
-                const db = await this.init();
-                return new Promise((resolve, reject) => {
-                    const tx = db.transaction('store', 'readwrite');
-                    const store = tx.objectStore('store');
-                    const request = store.put(value, key);
-                    request.onsuccess = () => resolve();
-                    request.onerror = () => reject(request.error);
-                });
-            }
-        };
-
-        async function migrarDatos() {
-            
-            if (localStorage.getItem('catalogoEncom_v2')) {
-                await DB.set('catalogoEncom_v2', JSON.parse(localStorage.getItem('catalogoEncom_v2')));
-                localStorage.removeItem('catalogoEncom_v2');
-            }
-            if (localStorage.getItem('encomSiteSettings_v1')) {
-                await DB.set('encomSiteSettings_v1', JSON.parse(localStorage.getItem('encomSiteSettings_v1')));
-                localStorage.removeItem('encomSiteSettings_v1');
-            }
-            if (localStorage.getItem('categoriasEncom')) {
-                await DB.set('categoriasEncom', JSON.parse(localStorage.getItem('categoriasEncom')));
-                localStorage.removeItem('categoriasEncom');
-            }
-        }
-/* --- EXPORTAR E IMPORTAR DATOS (BACKUP) --- */
-        async function exportarDatos() {
+        /* --- COPIA DE SEGURIDAD (BACKUP) --- */
+        function exportarDatos() {
             try {
-                const cats = await DB.get('categoriasEncom') || categorias;
-                const prods = await DB.get('catalogoEncom_v2') || productos;
-                const sets = await DB.get('encomSiteSettings_v1') || siteSettings;
-
                 const backup = {
-                    categorias: cats,
-                    productos: prods,
-                    settings: sets,
+                    categorias: window.categorias,
+                    productos: window.productos,
+                    settings: window.siteSettings,
                     fecha: new Date().toISOString()
                 };
 
@@ -1349,13 +1657,10 @@
                 try {
                     const backup = JSON.parse(e.target.result);
                     if (backup.categorias && backup.productos && backup.settings) {
-                        await DB.set('categoriasEncom', backup.categorias);
-                        await DB.set('catalogoEncom_v2', backup.productos);
-                        await DB.set('encomSiteSettings_v1', backup.settings);
-                        
-                        categorias = backup.categorias;
-                        productos = backup.productos;
-                        siteSettings = backup.settings;
+                        mostrarMensaje('Restaurando datos locales...', 'info');
+                        window.categorias = backup.categorias;
+                        window.productos = backup.productos;
+                        window.siteSettings = backup.settings;
 
                         applySiteSettings();
                         renderFilters();
@@ -1363,7 +1668,7 @@
                         actualizarSelectCategorias();
                         cerrarModalSettings();
                         
-                        mostrarMensaje('Datos importados y restaurados con éxito.', 'success');
+                        mostrarMensaje('Datos importados y restaurados correctamente.', 'success');
                     } else {
                         mostrarMensaje('El archivo de respaldo no tiene el formato correcto.', 'error');
                     }
@@ -1372,74 +1677,10 @@
                 }
             };
             reader.readAsText(file);
-            input.value = ''; // reset
+            input.value = ''; 
         }
 
-        /* --- ESTADO GLOBAL Y DATOS MOCK --- */
-        const apiKey = ""; 
-        let isAdmin = false;
-        let filtroActual = 'Todas';
-        let addImageMode = 'url';
-        let editImageMode = 'url';
-        let navOffsetCached = 0; 
-        
-        let cropperInstance = null;
-        let cropTargetInputId = null;
-        let cropPreviewId = null;
-        let cropFileType = 'image/jpeg';
-
-        const defaultCategories = ['Estaciones de Energía', 'Paneles Solares', 'Accesorios'];
-        const defaultProducts = [
-            { id: 1, nombre: 'EcoFlow Delta Pro', categoria: 'Estaciones de Energía', stock: 'disponible', descripcion: 'Estación de energía portátil de 3.6kWh, expandible a 25kWh. Ideal para respaldo de hogar entero. Múltiples puertos de salida y carga súper rápida.', imagen: 'https://images.unsplash.com/photo-1593941707882-a5bba14938cb?auto=format&fit=crop&w=600&q=80' },
-            { id: 2, nombre: 'Panel Solar Plegable 400W', categoria: 'Paneles Solares', stock: 'disponible', descripcion: 'Panel solar monocristalino de alta eficiencia (23%). Diseño plegable con funda protectora. Resistente al agua y polvo IP68.', imagen: 'https://images.unsplash.com/photo-1509391366360-1e97f52ce23b?auto=format&fit=crop&w=600&q=80' },
-            { id: 3, nombre: 'Growatt Infinity 1500', categoria: 'Estaciones de Energía', stock: 'disponible', descripcion: 'Generador solar de 1512Wh con inversor de 2000W. Carga de 0 a 80% en 1 hora. UPS integrado para transferencia sin cortes.', imagen: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
-        ];
-        
-        const defaultSiteSettings = {
-            bannerActive: true,
-            bannerText: "⚡ OFERTA LIMITADA: Bono de $500 en tu instalación solar. ¡Cotiza hoy!",
-            logoUrl: "https://ui-avatars.com/api/?name=Encom+Power&background=FFD600&color=000&size=200&font-size=0.33&bold=true",
-            heroBg: "https://images.unsplash.com/photo-1509391366360-1e97f52ce23b?auto=format&fit=crop&w=1920&q=80",
-            servicio1: "https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&w=1000&q=80",
-            servicio2: "https://images.unsplash.com/photo-1593941707882-a5bba14938cb?auto=format&fit=crop&w=1000&q=80",
-            servicio3: "https://images.unsplash.com/photo-1509391366360-1e97f52ce23b?auto=format&fit=crop&w=1000&q=80",
-            appUrl: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=600&q=80",
-            galeria1: "https://images.unsplash.com/photo-1611365892590-b1d5c21f3576?auto=format&fit=crop&w=600&q=80",
-            galeria2: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80",
-            galeria3: "https://images.unsplash.com/photo-1620288627223-53302f4e8c74?auto=format&fit=crop&w=600&q=80",
-            galeria4: "https://images.unsplash.com/photo-1593941707882-a5bba14938cb?auto=format&fit=crop&w=600&q=80",
-            facebookUrl: "https://facebook.com",
-            instagramUrl: "https://instagram.com",
-            youtubeUrl: "https://youtube.com"
-        };
-
-        let categorias = defaultCategories;
-        let productos = defaultProducts;
-        let siteSettings = defaultSiteSettings;
-
-        /* --- INICIALIZACIÓN --- */
-        document.addEventListener('DOMContentLoaded', async () => {
-            await migrarDatos();
-            
-            const storedCat = await DB.get('categoriasEncom');
-            if (storedCat) categorias = storedCat;
-            
-            const storedProd = await DB.get('catalogoEncom_v2');
-            if (storedProd) productos = storedProd;
-            
-            const storedSet = await DB.get('encomSiteSettings_v1');
-            if (storedSet) {
-                siteSettings = { ...defaultSiteSettings, ...storedSet }; 
-            }
-            
-            applySiteSettings();
-            renderFilters();
-            renderCatalog();
-            actualizarSelectCategorias();
-            actualizarCalculadora();
-        });
-
-        /* --- UTILIDADES (UI) Y SCROLL --- */
+        /* --- COMPORTAMIENTO NAVBAR Y SCROLL --- */
         function toggleMenu() {
             const navLinks = document.getElementById('nav-links');
             if (window.innerWidth < 768) {
@@ -1454,33 +1695,28 @@
         function calcularOffsetsNav() {
             const promoBanner = document.getElementById('promo-banner');
             const bannerHeight = (promoBanner && !promoBanner.classList.contains('hidden')) ? promoBanner.offsetHeight : 0;
-            navOffsetCached = isAdmin ? 48 : bannerHeight;
+            window.navOffsetCached = window.isAdmin ? 48 : bannerHeight;
             
             const nav = document.getElementById('navbar');
-            if (window.scrollY <= 40 && !isAdmin) {
-                nav.style.setProperty('--nav-top', `${navOffsetCached}px`);
-                const corpTopbar = document.getElementById('corporate-topbar');
+            if (window.scrollY <= 40 && !window.isAdmin) {
+                nav.style.setProperty('--nav-top', `${window.navOffsetCached}px`);
                 const isMobile = window.innerWidth < 768;
-                // En móvil no existe el corporate-topbar
-                document.getElementById('nav-links').style.setProperty('--nav-top-mobile', `${navOffsetCached + (isMobile ? 0 : 32) + 96}px`); 
+                document.getElementById('nav-links').style.setProperty('--nav-top-mobile', `${window.navOffsetCached + (isMobile ? 0 : 32) + 96}px`); 
             }
         }
 
         window.addEventListener('scroll', () => {
             const header = document.getElementById('main-header');
             const nav = document.getElementById('navbar');
-            
-            const adminOffset = isAdmin ? 48 : 0;
+            const adminOffset = window.isAdmin ? 48 : 0;
             
             if (window.scrollY > 40) {
                 const offsetUp = nav.offsetTop; 
                 header.style.top = `${adminOffset - offsetUp}px`;
-                
                 nav.classList.add('h-20', 'shadow-lg', 'bg-black/95');
                 nav.classList.remove('h-24');
             } else {
                 header.style.top = `${adminOffset}px`;
-                
                 nav.classList.add('h-24');
                 nav.classList.remove('h-20', 'shadow-lg', 'bg-black/95');
             }
@@ -1534,7 +1770,7 @@
             }, 3000);
         }
 
-        /* --- LÓGICA CALCULADORA SOLAR --- */
+        /* --- CALCULADORA SOLAR --- */
         function actualizarCalculadora() {
             const bill = parseFloat(document.getElementById('calc-bill-slider').value);
             document.getElementById('calc-bill-display').innerText = `$${bill.toLocaleString()}`;
@@ -1553,23 +1789,17 @@
             document.getElementById('calc-savings-display').innerText = `$${Math.round(ahorroProyectado).toLocaleString()}`;
         }
 
-        /* --- CROPPER (ALTA CALIDAD) --- */
-        function processSettingFile(inputEl, targetInputId) {
-            const file = inputEl.files[0];
-            if (file) iniciarCropper(file, targetInputId, null);
-            inputEl.value = ''; 
-        }
-
+        /* --- CROPPER (RECORTADOR DE IMÁGENES) --- */
         function previewLocalImage(inputEl, previewId) {
             const file = inputEl.files[0];
             if (file) iniciarCropper(file, inputEl.id, previewId);
             inputEl.value = ''; 
         }
 
-        function iniciarCropper(file, inputId, previewId) {
-            cropTargetInputId = inputId;
-            cropPreviewId = previewId;
-            cropFileType = file.type; 
+        function iniciarCropper(file, inputId, previewId, isDesignImage = false) {
+            window.cropTargetInputId = inputId;
+            window.cropPreviewId = previewId;
+            window.cropFileType = file.type; 
 
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -1580,32 +1810,34 @@
                 imageEl.src = e.target.result;
                 cropModal.classList.add('active');
                 
-                if (cropperInstance) cropperInstance.destroy();
+                if (window.cropperInstance) window.cropperInstance.destroy();
                 
-                cropperInstance = new Cropper(imageEl, {
+                window.cropperInstance = new Cropper(imageEl, {
                     viewMode: 1,
                     autoCropArea: 1,
                     background: false,
                     zoomable: true,
                     responsive: true
                 });
+                
+                window.cropperInstance.isDesignImage = isDesignImage;
             };
         }
 
         function cerrarCropper() {
             document.getElementById('crop-modal').classList.remove('active');
-            if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+            if (window.cropperInstance) { window.cropperInstance.destroy(); window.cropperInstance = null; }
         }
 
         function guardarRecorte() {
-            if (!cropperInstance) return;
+            if (!window.cropperInstance) return;
             
             let maxDim = 1000; 
-            if (cropTargetInputId.includes('hero')) maxDim = 1920; 
-            else if (cropTargetInputId.includes('servicio') || cropTargetInputId.includes('galeria') || cropTargetInputId.includes('app')) maxDim = 1200; 
-            else if (cropTargetInputId.includes('logo')) maxDim = 600;
+            if (window.cropTargetInputId.includes('hero')) maxDim = 1920; 
+            else if (window.cropTargetInputId.includes('servicio') || window.cropTargetInputId.includes('galeria') || window.cropTargetInputId.includes('app')) maxDim = 1200; 
+            else if (window.cropTargetInputId.includes('logo')) maxDim = 600;
 
-            const canvas = cropperInstance.getCroppedCanvas({
+            const canvas = window.cropperInstance.getCroppedCanvas({
                 maxWidth: maxDim,
                 maxHeight: maxDim,
                 fillColor: '#000000' 
@@ -1614,38 +1846,41 @@
             let outputFormat = 'image/webp';
             let quality = 0.85; 
 
-            if (cropTargetInputId.includes('logo') && cropFileType === 'image/png') {
+            if (window.cropTargetInputId.includes('logo') && window.cropFileType === 'image/png') {
                 outputFormat = 'image/png';
                 quality = undefined; 
             }
             
-            const base64 = canvas.toDataURL(outputFormat, quality);
-            
-            const targetInput = document.getElementById(cropTargetInputId);
-            
-            if (targetInput) {
-                if (targetInput.tagName === 'INPUT' && targetInput.type !== 'file') {
-                    targetInput.value = base64; 
-                } else if (targetInput.type === 'file') {
-                    targetInput.dataset.compressed = base64; 
-                }
-            }
-            
-            if (cropPreviewId) {
-                const imgEl = document.getElementById(cropPreviewId);
-                const placeholder = document.getElementById(cropPreviewId.replace('img-preview', 'img-placeholder'));
-                if (imgEl) {
-                    imgEl.src = base64;
-                    imgEl.classList.remove('hidden');
-                    if (placeholder) placeholder.classList.add('hidden');
-                }
-            }
+            canvas.toBlob(async (blob) => {
+                window.blobImagenRecortada = blob; 
 
-            cerrarCropper();
-            mostrarMensaje('Imagen procesada en Alta Calidad', 'success');
+                const base64Preview = canvas.toDataURL(outputFormat, quality);
+                
+                if (window.cropperInstance.isDesignImage) {
+                    await window.subirImagenDiseno(blob, window.cropTargetInputId);
+                } else {
+                    const targetInput = document.getElementById(window.cropTargetInputId);
+                    if (targetInput) {
+                        targetInput.value = "[Archivo Recortado]";
+                    }
+                }
+
+                if (window.cropPreviewId) {
+                    const imgEl = document.getElementById(window.cropPreviewId);
+                    const placeholder = document.getElementById(window.cropPreviewId.replace('img-preview', 'img-placeholder'));
+                    if (imgEl) {
+                        imgEl.src = base64Preview;
+                        imgEl.classList.remove('hidden');
+                        if (placeholder) placeholder.classList.add('hidden');
+                    }
+                }
+
+                cerrarCropper();
+                mostrarMensaje('Imagen recortada correctamente.', 'success');
+            }, outputFormat, quality);
         }
 
-        /* --- MANEJO DE IMÁGENES Y VIDEOS (TABS Y GALERÍA) --- */
+        /* --- SELECTOR DE PANTALLA URL / ARCHIVO EN FORMULARIOS --- */
         function toggleImageMode(context, mode) {
             const isAdd = context === 'add';
             const urlInput = document.getElementById(isAdd ? 'prod-image' : 'edit-prod-image');
@@ -1654,7 +1889,7 @@
             const tabFile = document.getElementById(isAdd ? 'add-tab-file' : 'edit-tab-file');
             const previewId = isAdd ? 'add-img-preview' : 'edit-img-preview';
 
-            if (isAdd) addImageMode = mode; else editImageMode = mode;
+            if (isAdd) window.addImageMode = mode; else window.editImageMode = mode;
 
             if (mode === 'url') {
                 urlInput.classList.remove('hidden');
@@ -1685,47 +1920,46 @@
             }
         }
 
-        /* --- GESTIÓN DE DISEÑO DEL SITIO WEB Y BANNER --- */
+        /* --- DISEÑO DEL SITIO WEB --- */
         function applySiteSettings() {
             const promoBanner = document.getElementById('promo-banner');
             const promoBannerText = document.getElementById('promo-banner-text');
             
-            if(siteSettings.bannerActive && !isAdmin) { 
+            if(window.siteSettings.bannerActive && !window.isAdmin) { 
                 promoBanner.classList.remove('hidden');
-                promoBannerText.innerText = siteSettings.bannerText;
+                promoBannerText.innerText = window.siteSettings.bannerText;
             } else {
                 promoBanner.classList.add('hidden');
             }
             
             const logoNav = document.getElementById('site-logo-nav');
-            if (logoNav) logoNav.src = siteSettings.logoUrl || defaultSiteSettings.logoUrl;
+            if (logoNav) logoNav.src = window.siteSettings.logoUrl;
             const logoFooter = document.getElementById('site-logo-footer');
-            if (logoFooter) logoFooter.src = siteSettings.logoUrl || defaultSiteSettings.logoUrl;
+            if (logoFooter) logoFooter.src = window.siteSettings.logoUrl;
 
             const hero = document.getElementById('inicio');
-            if(hero) hero.style.backgroundImage = `url('${getMediaUrl(siteSettings.heroBg, defaultSiteSettings.heroBg)}')`;
+            if(hero) hero.style.backgroundImage = `url('${getMediaUrl(window.siteSettings.heroBg, "")}')`;
             
-            renderGalleryItem('servicio-1', siteSettings.servicio1, defaultSiteSettings.servicio1);
-            renderGalleryItem('servicio-2', siteSettings.servicio2, defaultSiteSettings.servicio2);
-            renderGalleryItem('servicio-3', siteSettings.servicio3, defaultSiteSettings.servicio3);
+            renderGalleryItem('servicio-1', window.siteSettings.servicio1, "");
+            renderGalleryItem('servicio-2', window.siteSettings.servicio2, "");
+            renderGalleryItem('servicio-3', window.siteSettings.servicio3, "");
             
-            renderGalleryItem('app', siteSettings.appUrl, defaultSiteSettings.appUrl);
+            renderGalleryItem('app', window.siteSettings.appUrl, "");
 
-            renderGalleryItem('galeria-1', siteSettings.galeria1, defaultSiteSettings.galeria1);
-            renderGalleryItem('galeria-2', siteSettings.galeria2, defaultSiteSettings.galeria2);
-            renderGalleryItem('galeria-3', siteSettings.galeria3, defaultSiteSettings.galeria3);
-            renderGalleryItem('galeria-4', siteSettings.galeria4, defaultSiteSettings.galeria4);
+            renderGalleryItem('galeria-1', window.siteSettings.galeria1, "");
+            renderGalleryItem('galeria-2', window.siteSettings.galeria2, "");
+            renderGalleryItem('galeria-3', window.siteSettings.galeria3, "");
+            renderGalleryItem('galeria-4', window.siteSettings.galeria4, "");
 
             const linkFb = document.getElementById('link-fb');
-            if (linkFb) linkFb.href = siteSettings.facebookUrl || defaultSiteSettings.facebookUrl;
+            if (linkFb) linkFb.href = window.siteSettings.facebookUrl;
             
             const linkIg = document.getElementById('link-ig');
-            if (linkIg) linkIg.href = siteSettings.instagramUrl || defaultSiteSettings.instagramUrl;
+            if (linkIg) linkIg.href = window.siteSettings.instagramUrl;
             
             const linkYt = document.getElementById('link-yt');
-            if (linkYt) linkYt.href = siteSettings.youtubeUrl || defaultSiteSettings.youtubeUrl;
+            if (linkYt) linkYt.href = window.siteSettings.youtubeUrl;
 
-            // Recalcula y fuerza la actualización de la barra superior para evitar el "brinco"
             setTimeout(() => {
                 calcularOffsetsNav();
                 window.dispatchEvent(new Event('scroll'));
@@ -1733,24 +1967,22 @@
         }
 
         function abrirModalSettings() {
-            document.getElementById('set-banner-active').checked = siteSettings.bannerActive;
-            document.getElementById('banner-status-text').innerText = siteSettings.bannerActive ? 'Encendido' : 'Apagado';
-            document.getElementById('banner-status-text').style.color = siteSettings.bannerActive ? '#FFD600' : 'white';
-            document.getElementById('set-banner-text').value = siteSettings.bannerText || "";
+            document.getElementById('set-banner-active').checked = window.siteSettings.bannerActive;
+            document.getElementById('set-banner-text').value = window.siteSettings.bannerText || "";
 
-            document.getElementById('set-logo-url').value = siteSettings.logoUrl || "";
-            document.getElementById('set-hero-url').value = siteSettings.heroBg;
-            document.getElementById('set-s1-url').value = siteSettings.servicio1;
-            document.getElementById('set-s2-url').value = siteSettings.servicio2;
-            document.getElementById('set-s3-url').value = siteSettings.servicio3;
-            document.getElementById('set-app-url').value = siteSettings.appUrl || "";
-            document.getElementById('set-g1-url').value = siteSettings.galeria1 || defaultSiteSettings.galeria1;
-            document.getElementById('set-g2-url').value = siteSettings.galeria2 || defaultSiteSettings.galeria2;
-            document.getElementById('set-g3-url').value = siteSettings.galeria3 || defaultSiteSettings.galeria3;
-            document.getElementById('set-g4-url').value = siteSettings.galeria4 || defaultSiteSettings.galeria4;
-            document.getElementById('set-fb-url').value = siteSettings.facebookUrl || "";
-            document.getElementById('set-ig-url').value = siteSettings.instagramUrl || "";
-            document.getElementById('set-yt-url').value = siteSettings.youtubeUrl || "";
+            document.getElementById('set-logo-url').value = window.siteSettings.logoUrl || "";
+            document.getElementById('set-hero-url').value = window.siteSettings.heroBg || "";
+            document.getElementById('set-s1-url').value = window.siteSettings.servicio1 || "";
+            document.getElementById('set-s2-url').value = window.siteSettings.servicio2 || "";
+            document.getElementById('set-s3-url').value = window.siteSettings.servicio3 || "";
+            document.getElementById('set-app-url').value = window.siteSettings.appUrl || "";
+            document.getElementById('set-g1-url').value = window.siteSettings.galeria1 || "";
+            document.getElementById('set-g2-url').value = window.siteSettings.galeria2 || "";
+            document.getElementById('set-g3-url').value = window.siteSettings.galeria3 || "";
+            document.getElementById('set-g4-url').value = window.siteSettings.galeria4 || "";
+            document.getElementById('set-fb-url').value = window.siteSettings.facebookUrl || "";
+            document.getElementById('set-ig-url').value = window.siteSettings.instagramUrl || "";
+            document.getElementById('set-yt-url').value = window.siteSettings.youtubeUrl || "";
 
             document.getElementById('settings-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1762,41 +1994,13 @@
             document.body.style.overflow = 'auto';
         }
 
-        async function guardarSettings() {
-            siteSettings.bannerActive = document.getElementById('set-banner-active').checked;
-            siteSettings.bannerText = document.getElementById('set-banner-text').value || defaultSiteSettings.bannerText;
-
-            siteSettings.logoUrl = document.getElementById('set-logo-url').value || defaultSiteSettings.logoUrl;
-            siteSettings.heroBg = document.getElementById('set-hero-url').value || defaultSiteSettings.heroBg;
-            siteSettings.servicio1 = document.getElementById('set-s1-url').value || defaultSiteSettings.servicio1;
-            siteSettings.servicio2 = document.getElementById('set-s2-url').value || defaultSiteSettings.servicio2;
-            siteSettings.servicio3 = document.getElementById('set-s3-url').value || defaultSiteSettings.servicio3;
-            siteSettings.appUrl = document.getElementById('set-app-url').value || defaultSiteSettings.appUrl;
-            siteSettings.galeria1 = document.getElementById('set-g1-url').value || defaultSiteSettings.galeria1;
-            siteSettings.galeria2 = document.getElementById('set-g2-url').value || defaultSiteSettings.galeria2;
-            siteSettings.galeria3 = document.getElementById('set-g3-url').value || defaultSiteSettings.galeria3;
-            siteSettings.galeria4 = document.getElementById('set-g4-url').value || defaultSiteSettings.galeria4;
-            siteSettings.facebookUrl = document.getElementById('set-fb-url').value || defaultSiteSettings.facebookUrl;
-            siteSettings.instagramUrl = document.getElementById('set-ig-url').value || defaultSiteSettings.instagramUrl;
-            siteSettings.youtubeUrl = document.getElementById('set-yt-url').value || defaultSiteSettings.youtubeUrl;
-            
-            try {
-                await DB.set('encomSiteSettings_v1', siteSettings);
-                applySiteSettings();
-                cerrarModalSettings();
-                mostrarMensaje('Diseño y ofertas actualizados correctamente', 'info');
-            } catch (e) {
-                mostrarMensaje('Error al guardar los ajustes.', 'error');
-            }
-        }
-
-        /* --- PREVISUALIZACIÓN DE IMÁGENES POR URL --- */
+        /* --- PREVISUALIZACIÓN DE IMAGEN POR URL --- */
         function previewImage(inputId, previewId) {
             const url = document.getElementById(inputId).value;
             const imgEl = document.getElementById(previewId);
             const placeholder = document.getElementById(inputId.replace('prod-image', 'add-img-placeholder'));
             
-            if(url) {
+            if(url && url !== "[Archivo Recortado]") {
                 imgEl.src = getMediaUrl(url, url); 
                 imgEl.classList.remove('hidden');
                 if(placeholder) placeholder.classList.add('hidden');
@@ -1808,6 +2012,8 @@
                         placeholder.classList.remove('hidden');
                     }
                 };
+            } else if (url === "[Archivo Recortado]") {
+                // El cropper mantendrá la previsualización del blob.
             } else {
                 imgEl.classList.add('hidden');
                 if(placeholder) {
@@ -1817,20 +2023,21 @@
             }
         }
 
-        /* --- LÓGICA DE CATÁLOGO Y ESTADO DE INVENTARIO --- */
+        /* --- FILTROS DE CATÁLOGO --- */
         function renderFilters() {
             const container = document.getElementById('filters-container');
+            if (!container) return;
             container.innerHTML = '';
             
             const btnTodas = document.createElement('button');
-            btnTodas.className = `px-6 py-2 rounded-full text-sm font-bold border transition-all ${filtroActual === 'Todas' ? 'bg-encom-yellow text-black border-encom-yellow' : 'bg-transparent border-zinc-700 text-zinc-400 hover:border-encom-yellow hover:text-white'}`;
+            btnTodas.className = `px-6 py-2 rounded-full text-sm font-bold border transition-all ${window.filtroActual === 'Todas' ? 'bg-encom-yellow text-black border-encom-yellow' : 'bg-transparent border-zinc-700 text-zinc-400 hover:border-encom-yellow hover:text-white'}`;
             btnTodas.innerText = 'Todas';
             btnTodas.onclick = () => setFiltro('Todas');
             container.appendChild(btnTodas);
 
-            categorias.forEach(cat => {
+            window.categorias.forEach(cat => {
                 const btn = document.createElement('button');
-                btn.className = `px-6 py-2 rounded-full text-sm font-bold border transition-all ${filtroActual === cat ? 'bg-encom-yellow text-black border-encom-yellow' : 'bg-transparent border-zinc-700 text-zinc-400 hover:border-encom-yellow hover:text-white'}`;
+                btn.className = `px-6 py-2 rounded-full text-sm font-bold border transition-all ${window.filtroActual === cat ? 'bg-encom-yellow text-black border-encom-yellow' : 'bg-transparent border-zinc-700 text-zinc-400 hover:border-encom-yellow hover:text-white'}`;
                 btn.innerText = cat;
                 btn.onclick = () => setFiltro(cat);
                 container.appendChild(btn);
@@ -1838,34 +2045,36 @@
         }
 
         function setFiltro(cat) {
-            filtroActual = cat;
+            window.filtroActual = cat;
             renderFilters();
             renderCatalog();
         }
 
+        /* --- RENDERIZADO DEL CATÁLOGO --- */
         function renderCatalog() {
             const grid = document.getElementById('catalog-grid');
             const emptyMsg = document.getElementById('empty-catalog');
+            if (!grid) return;
             grid.innerHTML = '';
 
-            let productosFiltrados = filtroActual === 'Todas' 
-                ? productos 
-                : productos.filter(p => p.categoria === filtroActual);
+            let productosFiltrados = window.filtroActual === 'Todas' 
+                ? window.productos 
+                : window.productos.filter(p => p.categoria === window.filtroActual);
 
-            if (!isAdmin) {
+            if (!window.isAdmin) {
                 productosFiltrados = productosFiltrados.filter(p => p.stock !== 'oculto');
             }
 
             if (productosFiltrados.length === 0) {
-                emptyMsg.classList.remove('hidden');
+                if (emptyMsg) emptyMsg.classList.remove('hidden');
                 grid.classList.add('hidden');
                 return;
             } else {
-                emptyMsg.classList.add('hidden');
+                if (emptyMsg) emptyMsg.classList.add('hidden');
                 grid.classList.remove('hidden');
             }
 
-            productosFiltrados.reverse().forEach((prod, index) => {
+            productosFiltrados.forEach((prod, index) => {
                 const fallbackImg = "https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=500&q=80";
                 const imgUrl = getMediaUrl(prod.imagen, fallbackImg); 
                 const esVideo = isVideo(prod.imagen);
@@ -1878,7 +2087,7 @@
                 if (isAgotado) {
                     statusClasses = 'prod-agotado';
                     statusBadge = `<div class="absolute inset-0 bg-black/60 flex items-center justify-center z-20"><span class="border-4 border-red-500 text-red-500 font-black text-2xl uppercase px-4 py-2 transform -rotate-12 tracking-widest backdrop-blur-sm">Agotado</span></div>`;
-                } else if (isOculto && isAdmin) {
+                } else if (isOculto && window.isAdmin) {
                     statusClasses = 'prod-oculto';
                     statusBadge = `<div class="absolute inset-0 bg-black/40 flex items-center justify-center z-20"><span class="bg-red-500 text-white font-bold text-sm uppercase px-3 py-1 rounded-full"><i class="ph-bold ph-eye-slash"></i> Oculto al Público</span></div>`;
                 }
@@ -1889,21 +2098,21 @@
 
                 const card = document.createElement('div');
                 card.className = `glass-panel rounded-2xl overflow-hidden group hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.8)] hover:border-b-4 hover:border-b-encom-yellow transition-all duration-300 flex flex-col opacity-0 animate-[fadeIn_0.5s_forwards] ${statusClasses}`;
-                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animationDelay = `${index * 0.05}s`;
                 
                 let adminHtml = '';
-                if (isAdmin) {
+                if (window.isAdmin) {
                     adminHtml = `
                     <div class="flex gap-2 mt-4 relative z-30 pointer-events-auto filter-none opacity-100">
-                        <button onclick="abrirModalEditar(${prod.id}, event)" class="flex-1 bg-blue-500/10 border border-[#3b82f6]/50 text-[#3b82f6] py-2 rounded-lg text-sm font-bold hover:bg-[#3b82f6] hover:text-white transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-pencil-simple"></i> Editar</button>
-                        <button onclick="eliminarProducto(${prod.id}, event)" class="flex-1 bg-red-500/10 border border-red-500/50 text-red-500 py-2 rounded-lg text-sm font-bold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-trash"></i> Eliminar</button>
+                        <button onclick="abrirModalEditar('${prod.id}', event)" class="flex-1 bg-blue-500/10 border border-[#3b82f6]/50 text-[#3b82f6] py-2 rounded-lg text-sm font-bold hover:bg-[#3b82f6] hover:text-white transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-pencil-simple"></i> Editar</button>
+                        <button onclick="eliminarProducto('${prod.id}', event)" class="flex-1 bg-red-500/10 border border-red-500/50 text-red-500 py-2 rounded-lg text-sm font-bold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-1"><i class="ph-bold ph-trash"></i> Eliminar</button>
                     </div>`;
                 }
 
-                const clickAction = (!isAgotado || isAdmin) ? `onclick="abrirVisorImagen('${prod.imagen}')"` : '';
+                const clickAction = (!isAgotado || window.isAdmin) ? `onclick="abrirModalVista('${prod.id}')"` : '';
 
                 card.innerHTML = `
-                    <div class="relative overflow-hidden cursor-pointer bg-[#050505] aspect-[4/3] flex items-center justify-center" ${clickAction}>
+                    <div class="relative overflow-hidden cursor-pointer bg-[#050505] aspect-[4/3] flex items-center justify-center shadow-inner" ${clickAction}>
                         ${statusBadge}
                         <span class="absolute top-4 right-4 bg-encom-yellow text-black text-[10px] font-extrabold px-3 py-1 rounded-full uppercase z-10 shadow-lg">${prod.categoria}</span>
                         <img src="${imgUrl}" alt="${prod.nombre}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='${fallbackImg}'" class="img-fade-in w-full h-full object-cover group-hover:scale-110 group-hover:opacity-80 transition-all duration-500">
@@ -1919,7 +2128,29 @@
             });
         }
 
-        /* --- LÓGICA DE ADMINISTRADOR CMS --- */
+        /* --- DETALLE DE PRODUCTO (CLIENTE) --- */
+        function abrirModalVista(id) {
+            const prod = window.productos.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('modal-view-title').innerText = prod.nombre;
+            document.getElementById('modal-view-desc').innerText = prod.descripcion;
+            document.getElementById('modal-view-cat').innerText = prod.categoria;
+            document.getElementById('modal-view-img').src = getMediaUrl(prod.imagen, "");
+            
+            const whatsappText = `Hola, estoy interesado en recibir más información sobre el producto: ${prod.nombre}.`;
+            document.getElementById('modal-whatsapp-btn').href = `https://wa.me/19397394355?text=${encodeURIComponent(whatsappText)}`;
+
+            document.getElementById('product-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalVista() {
+            document.getElementById('product-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        /* --- CONTROL CMS DE ACCESO ADMINISTRATIVO --- */
         function abrirAdminChoice() {
             document.getElementById('admin-choice-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1936,7 +2167,7 @@
         function iniciarSesion() {
             const pass = document.getElementById('admin-pass').value;
             if (pass === 'encom2026') {
-                isAdmin = true;
+                window.isAdmin = true;
                 cerrarLogin();
                 
                 document.getElementById('admin-topbar').classList.add('visible');
@@ -1947,7 +2178,7 @@
                 
                 applySiteSettings(); 
                 
-                actualizarStatAdmin();
+                document.getElementById('admin-stat-prods').innerText = `${window.productos.length} Productos`;
                 mostrarMensaje('Has entrado al Modo Administrador CMS', 'success');
                 renderCatalog();
             } else {
@@ -1956,7 +2187,7 @@
         }
 
         function cerrarSesion() {
-            isAdmin = false;
+            window.isAdmin = false;
             
             document.getElementById('admin-topbar').classList.remove('visible');
             document.body.classList.remove('admin-active');
@@ -1970,15 +2201,12 @@
             renderCatalog();
         }
 
-        function actualizarStatAdmin() {
-            document.getElementById('admin-stat-prods').innerText = `${productos.length} Productos`;
-        }
-
         function abrirModalAdd() {
             document.getElementById('add-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
             actualizarSelectCategorias();
         }
+        
         function cerrarModalAdd(event) {
             if (event && event.target.id !== 'add-modal' && !event.target.classList.contains('close-modal')) return;
             document.getElementById('add-modal').classList.remove('active');
@@ -1990,6 +2218,7 @@
             document.body.style.overflow = 'hidden';
             renderCategoriasEnAdmin();
         }
+        
         function cerrarModalCategorias(event) {
             if (event && event.target.id !== 'category-modal' && !event.target.classList.contains('close-modal')) return;
             document.getElementById('category-modal').classList.remove('active');
@@ -1999,9 +2228,10 @@
         function actualizarSelectCategorias() {
             const selectAdd = document.getElementById('prod-category');
             const selectEdit = document.getElementById('edit-prod-category');
+            if(!selectAdd || !selectEdit) return;
             
             const optionsHtml = '<option value="" disabled selected>Selecciona una categoría</option>' + 
-                                categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+                                window.categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
             
             selectAdd.innerHTML = optionsHtml;
             selectEdit.innerHTML = optionsHtml;
@@ -2011,72 +2241,14 @@
         function renderCategoriasEnAdmin() {
             const list = document.getElementById('current-categories-list');
             if(list) {
-                list.innerHTML = categorias.map(cat => `<span class="bg-black/50 border border-zinc-700 px-3 py-1 rounded-full text-xs">${cat}</span>`).join('');
+                list.innerHTML = window.categorias.map(cat => `<span class="bg-black/50 border border-zinc-700 px-3 py-1 rounded-full text-xs">${cat}</span>`).join('');
             }
         }
 
-        async function agregarCategoria() {
-            const input = document.getElementById('new-category-name');
-            const nombre = input.value.trim();
-            if (!nombre) return mostrarMensaje('Ingresa un nombre para la categoría', 'error');
-            if (categorias.includes(nombre)) return mostrarMensaje('La categoría ya existe', 'error');
-
-            categorias.push(nombre);
-            await DB.set('categoriasEncom', categorias);
-            input.value = '';
-            
-            actualizarSelectCategorias();
-            renderFilters();
-            mostrarMensaje(`Categoría '${nombre}' creada`);
-        }
-
-        async function agregarProducto() {
-            const categoria = document.getElementById('prod-category').value;
-            const nombre = document.getElementById('prod-name').value.trim();
-            const descripcion = document.getElementById('prod-desc').value.trim();
-            const stock = document.getElementById('prod-stock').value || 'disponible';
-            
-            let imagen = "";
-            if (addImageMode === 'url') {
-                imagen = document.getElementById('prod-image').value.trim();
-            } else {
-                imagen = document.getElementById('prod-image-file').dataset.compressed || "";
-            }
-
-            if (!categoria || !nombre || !descripcion) {
-                return mostrarMensaje('Faltan datos obligatorios (Categoría, Nombre, Descripción)', 'error');
-            }
-
-            const nuevoProd = { id: Date.now(), nombre, categoria, descripcion, imagen, stock };
-            productos.push(nuevoProd);
-            
-            try {
-                await DB.set('catalogoEncom_v2', productos);
-                document.getElementById('prod-name').value = '';
-                document.getElementById('prod-desc').value = '';
-                document.getElementById('prod-image').value = '';
-                document.getElementById('prod-stock').value = 'disponible';
-                document.getElementById('prod-image-file').value = '';
-                document.getElementById('prod-image-file').dataset.compressed = '';
-                document.getElementById('prod-category').selectedIndex = 0;
-                
-                toggleImageMode('add', 'url'); 
-                previewImage('prod-image', 'add-img-preview'); 
-                
-                setFiltro(categoria);
-                actualizarStatAdmin();
-                cerrarModalAdd();
-                mostrarMensaje('Producto añadido al inventario con éxito', 'success');
-            } catch (e) {
-                productos.pop(); 
-                mostrarMensaje('Error al guardar el producto', 'error');
-            }
-        }
-
-        /* --- LÓGICA DE EDICIÓN --- */
+        /* --- EDICIÓN DE PRODUCTO --- */
         function abrirModalEditar(id, event) {
-            event.stopPropagation();
-            const prod = productos.find(p => p.id === id);
+            if (event) event.stopPropagation();
+            const prod = window.productos.find(p => p.id === id);
             if (!prod) return;
 
             document.getElementById('edit-prod-id').value = prod.id;
@@ -2091,7 +2263,6 @@
             toggleImageMode('edit', 'url');
             editUrlInput.value = prod.imagen || "";
             editFileInput.value = '';
-            editFileInput.dataset.compressed = '';
             
             previewImage('edit-prod-image', 'edit-img-preview');
 
@@ -2105,53 +2276,7 @@
             document.body.style.overflow = 'auto';
         }
 
-        async function guardarEdicion() {
-            const id = parseInt(document.getElementById('edit-prod-id').value);
-            const nombre = document.getElementById('edit-prod-name').value.trim();
-            const categoria = document.getElementById('edit-prod-category').value;
-            const descripcion = document.getElementById('edit-prod-desc').value.trim();
-            const stock = document.getElementById('edit-prod-stock').value;
-            
-            let imagen = "";
-            if (editImageMode === 'url') {
-                imagen = document.getElementById('edit-prod-image').value.trim();
-            } else {
-                imagen = document.getElementById('edit-prod-image-file').dataset.compressed || document.getElementById('edit-prod-image').value;
-            }
-
-            if (!categoria || !nombre || !descripcion) {
-                return mostrarMensaje('Todos los campos de texto son obligatorios', 'error');
-            }
-
-            const index = productos.findIndex(p => p.id === id);
-            if (index !== -1) {
-                const originalProd = { ...productos[index] }; 
-                productos[index] = { id, nombre, categoria, descripcion, imagen, stock };
-                
-                try {
-                    await DB.set('catalogoEncom_v2', productos);
-                    cerrarModalEditar();
-                    renderCatalog();
-                    mostrarMensaje('Cambios guardados con éxito', 'info');
-                } catch (e) {
-                    productos[index] = originalProd;
-                    mostrarMensaje('Error al guardar los cambios', 'error');
-                }
-            }
-        }
-
-        async function eliminarProducto(id, event) {
-            event.stopPropagation();
-            if(confirm('¿Estás seguro de eliminar este producto definitivamente?')) {
-                productos = productos.filter(p => p.id !== id);
-                await DB.set('catalogoEncom_v2', productos);
-                renderCatalog();
-                actualizarStatAdmin();
-                mostrarMensaje('Producto eliminado');
-            }
-        }
-
-        /* --- FORMULARIO DE CONTACTO (ENVÍO EMAIL) --- */
+        /* --- FORMULARIO DE CONTACTO (FORMSPREE) --- */
         async function enviarFormulario(event) {
             event.preventDefault();
             const form = event.target;
@@ -2195,7 +2320,7 @@
             }
         }
 
-        /* --- CONFIGURACIÓN DE LA API DE GEMINI --- */
+        /* --- GEMINI API INTEGRADORA --- */
         async function fetchConReintento(url, options, retries = 5) {
             let delay = 1000;
             for (let i = 0; i < retries; i++) {
@@ -2225,7 +2350,7 @@
             const prompt = `Escribe una descripción de ventas atractiva, profesional y técnica pero fácil de entender para un producto llamado '${nombre}' perteneciente a la categoría '${categoria}'. El producto es para Encom Power, empresa de soluciones de energía. Mantén la respuesta en un solo párrafo persuasivo de máximo 4 oraciones.`;
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${window.apiKey}`;
                 const payload = {
                     contents: [{ parts: [{ text: prompt }] }],
                     systemInstruction: { parts: [{ text: "Eres un copywriter experto." }] }
@@ -2247,7 +2372,7 @@
             }
         }
 
-        /* --- ASISTENTE DE VENTAS IA --- */
+        /* --- CHATBOT DE ASISTENCIA --- */
         function toggleChatWindow() {
             const chat = document.getElementById('ai-chat-window');
             chat.classList.toggle('active');
@@ -2277,15 +2402,15 @@
                 </div>`;
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            const inventarioTexto = productos.map(p => `- ${p.nombre} (Categoría: ${p.categoria}): ${p.descripcion}`).join('\n');
+            const inventarioTexto = window.productos.map(p => `- ${p.nombre} (Categoría: ${p.categoria}): ${p.descripcion}`).join('\n');
             const systemPrompt = `Eres asistente experto en ventas para Encom Power.
-            BASA TUS RECOMENDACIONES ÚNICAMENTE EN ESTE INVENTARIO ACTUAL:
+            BASA TUS RECOMENDACIONES ÚNICAMENTE EN ESTE INVENTARIO ACTUALIZADO EN LA NUBE:
             ${inventarioTexto}
-            - Sé breve, amable y directo.
-            - Si no está en inventario, ofréceles lo más parecido.`;
+            - Sé breve, muy servicial y amigable.
+            - Si no está en catálogo, ofréceles la solución más parecida.`;
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${window.apiKey}`;
                 const payload = {
                     contents: [{ parts: [{ text: mensajeUser }] }],
                     systemInstruction: { parts: [{ text: systemPrompt }] }
@@ -2314,196 +2439,58 @@
                 } else throw new Error("Respuesta vacía");
             } catch (error) {
                 document.getElementById(typingId).remove();
-                chatHistory.innerHTML += `<div class="text-red-500 text-xs pl-12 mb-2">❌ Error de conexión.</div>`;
+                chatHistory.innerHTML += `<div class="text-red-500 text-xs pl-12 mb-2">❌ Error de conexión con el asistente.</div>`;
             }
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
 
+        // Estilos de animación dinámicos
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         `;
         document.head.appendChild(style);
+
+        /* --- EXPOSICIÓN DE ACCIONES AL ÁMBITO GLOBAL --- */
+        window.toggleMenu = toggleMenu;
+        window.abrirVisorImagen = abrirVisorImagen;
+        window.cerrarVisorImagen = cerrarVisorImagen;
+        window.actualizarCalculadora = actualizarCalculadora;
+        window.previewLocalImage = previewLocalImage;
+        window.cerrarCropper = cerrarCropper;
+        window.guardarRecorte = guardarRecorte;
+        window.toggleImageMode = toggleImageMode;
+        window.abrirModalSettings = abrirModalSettings;
+        window.cerrarModalSettings = cerrarModalSettings;
+        window.previewImage = previewImage;
+        window.setFiltro = setFiltro;
+        window.abrirAdminChoice = abrirAdminChoice;
+        window.cerrarAdminChoice = cerrarAdminChoice;
+        window.abrirLogin = abrirLogin;
+        window.cerrarLogin = cerrarLogin;
+        window.iniciarSesion = iniciarSesion;
+        window.cerrarSesion = cerrarSesion;
+        window.abrirModalAdd = abrirModalAdd;
+        window.cerrarModalAdd = cerrarModalAdd;
+        window.abrirModalCategorias = abrirModalCategorias;
+        window.cerrarModalCategorias = cerrarModalCategorias;
+        window.abrirModalEditar = abrirModalEditar;
+        window.cerrarModalEditar = cerrarModalEditar;
+        window.abrirModalVista = abrirModalVista;
+        window.cerrarModalVista = cerrarModalVista;
+        window.enviarFormulario = enviarFormulario;
+        window.generarDescripcionIA = generarDescripcionIA;
+        window.toggleChatWindow = toggleChatWindow;
+        window.enviarMensajeIA = enviarMensajeIA;
+        window.exportarDatos = exportarDatos;
+        window.importarDatos = importarDatos;
+        window.mostrarMensaje = mostrarMensaje;
+
+        // Carga inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarCalculadora();
+        });
     </script>
 </body>
 </html>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Web con Firebase</title>
-</head>
-<body>
-
-    <h1>Conexión exitosa a Firebase</h1>
-
-    <!-- El tipo "module" es obligatorio para usar 'import' -->
-<script type="module">
-    // 1. Importaciones oficiales desde la CDN de Firebase (v10)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-    // 2. Tu configuración única de Encom Power
-    const firebaseConfig = {
-        apiKey: "AIzaSyBxf6PDYRSlKNHBukSxjGnDaNa49IRmjlU",
-        authDomain: "encom-power-app.firebaseapp.com",
-        projectId: "encom-power-app",
-        storageBucket: "encom-power-app.firebasestorage.app",
-        messagingSenderId: "537505362531",
-        appId: "1:537505362531:web:941c0af77fcd151edf7e56",
-        measurementId: "G-X99K2MF1RG"
-    };
-
-    // 3. Inicialización única de los servicios de la nube
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    console.log("🚀 [Firebase] Conexión establecida de manera correcta con Firestore y Storage.");
-
-    // Variable global para almacenar el recorte de Cropper si se usa
-    let blobImagenRecortada = null; 
-
-    // ========================================================
-    // FUNCIÓN 1 & 4: ESCUCHA AUTOMÁTICA Y SINCRONIZACIÓN EN TIEMPO REAL
-    // ========================================================
-    // Capturamos el contenedor de productos de tu HTML
-    const productsGrid = document.getElementById("products-grid");
-
-    if (productsGrid) {
-        // onSnapshot se queda vigilando la colección. Si la creas, borras o editas, reacciona sola.
-        onSnapshot(collection(db, "productos"), (snapshot) => {
-            productsGrid.innerHTML = ""; // Limpieza automática de la interfaz anterior
-            
-            snapshot.forEach((documento) => {
-                const item = documento.data();
-                const id = documento.id;
-
-                // Renderizado respetando tus clases de Tailwind CSS
-                productsGrid.innerHTML += `
-                    <div class="bg-encom-dark border border-neutral-800 rounded-xl overflow-hidden hover:border-encom-yellow transition duration-300 group">
-                        <div class="relative aspect-square bg-neutral-900 overflow-hidden">
-                            <img src="${item.urlMultimedia}" alt="${item.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <span class="absolute top-3 right-3 bg-encom-yellow text-encom-black text-xs font-bold px-2.5 py-1 rounded-full uppercase">
-                                ${item.categoria || 'Catálogo'}
-                            </span>
-                        </div>
-                        <div class="p-5">
-                            <h3 class="text-white font-semibold text-lg mb-1">${item.nombre}</h3>
-                            <p class="text-encom-dim text-sm mb-4 line-clamp-2">${item.descripcion || ''}</p>
-                            <div class="flex items-center justify-between pt-3 border-t border-neutral-800">
-                                <span class="text-encom-yellow font-bold text-xl">$${item.precio}</span>
-                                <div class="flex gap-2">
-                                    <button onclick="eliminarElemento('productos', '${id}', '${item.storagePath}')" class="bg-red-600/20 text-red-400 p-2 rounded-lg hover:bg-red-600 hover:text-white transition">
-                                        <i class="ph ph-trash text-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            console.log("🔄 [Tiempo Real] Catálogo actualizado con la base de datos.");
-        });
-    }
-
-    // ========================================================
-    // FUNCIÓN 2 & 3: PROCESAMIENTO MULTIMEDIA Y AUTO-ESTRUCTURA
-    // ========================================================
-    window.subirDatosYNube = async function(coleccion, datosTexto, archivoBinario) {
-        try {
-            if (!archivoBinario) {
-                alert("Falta el archivo multimedia (imagen o video).");
-                return;
-            }
-
-            // Generamos ruta e indexación única en Storage para evitar duplicados
-            const extension = archivoBinario.type.split('/')[1] || 'jpg';
-            const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substr(2, 5)}.${extension}`;
-            const storagePath = `${coleccion}/${nombreArchivo}`;
-            const storageRef = ref(storage, storagePath);
-
-            console.log("⏳ Subiendo multimedia a Storage...");
-            // Subida del archivo físico
-            await uploadBytes(storageRef, archivoBinario);
-            
-            // Obtención del link público
-            const urlPublica = await getDownloadURL(storageRef);
-
-            console.log("⏳ Creando documento en Firestore...");
-            // Inserción en la base de datos (Crea la colección si es nueva de forma autónoma)
-            await addDoc(collection(db, coleccion), {
-                ...datosTexto,
-                urlMultimedia: urlPublica,
-                storagePath: storagePath,
-                tipoMultimedia: archivoBinario.type,
-                tamanoArchivo: archivoBinario.size,
-                fechaCreacion: serverTimestamp() // Marca de tiempo del servidor
-            });
-
-            alert("✅ ¡Guardado en la nube exitosamente y replicado en todas las pantallas!");
-            return true;
-        } catch (error) {
-            console.error("Error crítico en el flujo de Firebase:", error);
-            alert("Error al conectar con la nube: " + error.message);
-            return false;
-        }
-    };
-
-    // FUNCIÓN DE ELIMINACIÓN LIMPIA
-    window.eliminarElemento = async function(coleccion, idDoc, pathStorage) {
-        if (confirm("¿Deseas eliminar permanentemente este registro del servidor?")) {
-            try {
-                if (pathStorage && pathStorage !== "undefined") {
-                    await deleteObject(ref(storage, pathStorage));
-                }
-                await deleteDoc(doc(db, coleccion, idDoc));
-                alert("Registro borrado de la nube.");
-            } catch (error) {
-                console.error("Error al eliminar:", error);
-            }
-        }
-    };
-
-    // ========================================================
-    // CONEXIÓN DIRECTA CON TUS FORMULARIOS (INTERCEPCIÓN SUBMIT)
-    // ========================================================
-    document.addEventListener("DOMContentLoaded", () => {
-        // Asegúrate de que el <form> en tu HTML de agregar producto tenga id="form-producto"
-        const formProducto = document.getElementById("form-producto");
-        
-        if (formProducto) {
-            formProducto.addEventListener("submit", async (e) => {
-                e.preventDefault(); // Detiene la recarga de la página de forma autónoma
-                
-                const btnSubmit = formProducto.querySelector("button[type='submit']");
-                if(btnSubmit) btnSubmit.disabled = true; // Evita doble envío si el internet es lento
-
-                const datos = {
-                    nombre: document.getElementById("prod-name")?.value || "Sin nombre",
-                    precio: parseFloat(document.getElementById("prod-price")?.value || 0),
-                    descripcion: document.getElementById("prod-desc")?.value || "",
-                    categoria: document.getElementById("prod-category")?.value || "General"
-                };
-
-                const inputFile = document.getElementById("prod-image");
-                // Si Cropper.js guardó un recorte usamos ese Blob, si no, el archivo directo del input
-                const archivoAGuardar = blobImagenRecortada ? blobImagenRecortada : inputFile?.files[0];
-
-                const exito = await window.subirDatosYNube("productos", datos, archivoAGuardar);
-                
-                if (exito) {
-                    formProducto.reset(); // Limpia campos
-                    blobImagenRecortada = null; // Resetea el recorte
-                    // Código tuyo para cerrar el modal (ej. toggleModal('product-modal'))
-                }
-                if(btnSubmit) btnSubmit.disabled = false;
-            });
-        }
-    });
-    
-</script>
